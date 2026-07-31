@@ -4,25 +4,25 @@
 <title>Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service</title>
 <meta name="description" content="Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...">
 <meta name="author" content="Suresh Kumar Mani">
-<meta name="publication-request-id" content="9fa456eb-d093-40cf-917d-d4076b31d2e3">
+<meta name="publication-request-id" content="23fdd0ef-f93d-4831-9be5-016df16be49a">
 <link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service">
 <meta property="og:description" content="Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...">
 <meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/">
 <meta property="og:image" content="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png">
-<meta property="article:published_time" content="2026-07-31T17:39:21.543Z">
-<meta property="article:modified_time" content="2026-07-31T17:39:21.543Z">
+<meta property="article:published_time" content="2026-07-31T18:42:34.115Z">
+<meta property="article:modified_time" content="2026-07-31T18:42:34.115Z">
 <meta property="article:author" content="Suresh Kumar Mani">
 <meta property="article:tag" content="Spring Boot">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="PDFBox">
 <meta property="article:tag" content="Printing">
 <meta property="article:tag" content="Backend Development">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service","description":"Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-07-31T17:39:21.543Z","dateModified":"2026-07-31T17:39:21.543Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","url":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","keywords":"Spring Boot, Java, PDFBox, Printing, Backend Development","image":"https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png"}</script>
-<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service","description":"Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-07-31T18:42:34.115Z","dateModified":"2026-07-31T18:42:34.115Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","url":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","keywords":"Spring Boot, Java, PDFBox, Printing, Backend Development","image":"https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
 </head><body><main><article itemscope itemtype="https://schema.org/Article">
-<header><h1 itemprop="headline">Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service</h1><p class="subtitle">A practical server-side pipeline for securely converting and printing PDF, Word, text, RTF, and HTML documents</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-07-31T17:39:21.543Z">2026-07-31</time></header>
+<header><h1 itemprop="headline">Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service</h1><p class="subtitle">A practical server-side pipeline for securely converting and printing PDF, Word, text, RTF, and HTML documents</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-07-31T18:42:34.115Z">2026-07-31</time></header>
 <figure><img src="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png" alt="Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service"></figure>
 <div itemprop="articleBody"><p>Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer, apply print settings, and report failures without exposing confidential data.</p>
 <p>This tutorial builds that pipeline with <strong>Spring Boot 3</strong>, <strong>Java 21</strong>, <strong>Apache PDFBox</strong>, and the Java Print Service API. The guiding principle is straightforward: <em>convert every supported document to PDF, then maintain one dependable printing path</em>.</p>
@@ -59,80 +59,84 @@
 <li>Submit the job and return a durable job identifier.</li>
 </ol>
 <p>The resulting architecture is intentionally layered:</p>
-<pre><code class="language-text">Multipart HTTP request<br />
-        |<br />
-        v<br />
-PrintController -- authentication and boundary validation<br />
-        |<br />
-        v<br />
-PrintService ---- orchestration and file-type detection<br />
-        |<br />
-        +--&gt; FileToPdfConverter -- input normalization<br />
-        |<br />
-        v<br />
-PrinterService -- printer discovery and PDFBox rendering<br />
-        |<br />
-        v<br />
-Operating-system spooler</code></pre>
+<pre><code class="language-text">Multipart HTTP request
+        |
+        v
+PrintController -- authentication and boundary validation
+        |
+        v
+PrintService ---- orchestration and file-type detection
+        |
+        +--&gt; FileToPdfConverter -- input normalization
+        |
+        v
+PrinterService -- printer discovery and PDFBox rendering
+        |
+        v
+Operating-system spooler
+</code></pre>
 <h2>Step 1: Add the required dependencies</h2>
 <p>Use Java 21 and a compatible Gradle runtime. The application needs Spring MVC, Spring Security, validation, PDFBox, and the conversion libraries approved by your organization.</p>
-<pre><code class="language-groovy">plugins {<br />
-    id 'java'<br />
-    id 'org.springframework.boot' version '3.4.0'<br />
-    id 'io.spring.dependency-management' version '1.1.6'<br />
-}<br />
-<br />
-java {<br />
-    toolchain {<br />
-        languageVersion = JavaLanguageVersion.of(21)<br />
-    }<br />
-}<br />
-<br />
-dependencies {<br />
-    implementation 'org.springframework.boot:spring-boot-starter-web'<br />
-    implementation 'org.springframework.boot:spring-boot-starter-security'<br />
-    implementation 'org.springframework.boot:spring-boot-starter-validation'<br />
-    implementation 'org.apache.pdfbox:pdfbox:2.0.29'<br />
-    implementation 'org.jsoup:jsoup:1.18.3'<br />
-<br />
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'<br />
-    testImplementation 'org.springframework.security:spring-security-test'<br />
-}</code></pre>
+<pre><code class="language-groovy">plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.29'
+    implementation 'org.jsoup:jsoup:1.18.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+</code></pre>
 <p>Word and HTML conversion libraries have licensing and security implications. Review their licenses and supported versions before shipping. Keep conversion behind an interface so Aspose.Words, LibreOffice headless, docx4j, or another converter can be substituted later.</p>
 <p>Useful references include the <a href="https://docs.spring.io/spring-boot/index.html">Spring Boot documentation</a> and the <a href="https://pdfbox.apache.org/">Apache PDFBox documentation</a>.</p>
 <h2>Step 2: Externalize printer configuration</h2>
 <p>Printer names and job options belong in configuration rather than controller code:</p>
-<pre><code class="language-properties">spring.servlet.multipart.max-file-size=10MB<br />
-spring.servlet.multipart.max-request-size=10MB<br />
-<br />
-app.admin.username=${ADMIN_USERNAME:admin}<br />
-app.admin.password=${ADMIN_PASSWORD}<br />
-<br />
-printer.name=Default_Printer<br />
-printer.copies=1<br />
-printer.chromaticity=COLOR<br />
-printer.printquality=HIGH<br />
-printer.mediasize=ISO_A4<br />
-printer.jobname=Document_Print_Job<br />
-printer.orientation=PORTRAIT<br />
-printer.duplex=ONE_SIDED<br />
-printer.pagerange=1-10</code></pre>
+<pre><code class="language-properties">spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+
+app.admin.username=${ADMIN_USERNAME:admin}
+app.admin.password=${ADMIN_PASSWORD}
+
+printer.name=Default_Printer
+printer.copies=1
+printer.chromaticity=COLOR
+printer.printquality=HIGH
+printer.mediasize=ISO_A4
+printer.jobname=Document_Print_Job
+printer.orientation=PORTRAIT
+printer.duplex=ONE_SIDED
+printer.pagerange=1-10
+</code></pre>
 <p>Never store a real production password in source control. <del>A convenient default password is harmless in a demo.</del> A published default often survives into a deployed environment, so require a secret at startup.</p>
 <h2>Step 3: Secure the API</h2>
 <p>For a machine-to-machine service, stateless HTTP Basic authentication is a compact demonstration:</p>
-<pre><code class="language-java">@Bean<br />
-SecurityFilterChain filterChain(HttpSecurity http) throws Exception {<br />
-    return http<br />
-        .authorizeHttpRequests(auth -&gt; auth<br />
-            .requestMatchers("/error").permitAll()<br />
-            .requestMatchers("/print/**").hasRole("USER")<br />
-            .anyRequest().authenticated())<br />
-        .httpBasic(basic -&gt; basic.realmName("Print Service"))<br />
-        .csrf(csrf -&gt; csrf.ignoringRequestMatchers("/print/**"))<br />
-        .sessionManagement(session -&gt; session<br />
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))<br />
-        .build();<br />
-}</code></pre>
+<pre><code class="language-java">@Bean
+SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers("/error").permitAll()
+            .requestMatchers("/print/**").hasRole("USER")
+            .anyRequest().authenticated())
+        .httpBasic(basic -&gt; basic.realmName("Print Service"))
+        .csrf(csrf -&gt; csrf.ignoringRequestMatchers("/print/**"))
+        .sessionManagement(session -&gt; session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .build();
+}
+</code></pre>
 <p>CSRF policy must match the authentication model. A stateless Basic-auth endpoint can be exempt, while a browser session authenticated by cookies generally needs CSRF protection. Encode the selected policy in tests so configuration and expectations cannot drift apart.</p>
 <h3>Security work before production</h3>
 <ul>
@@ -146,344 +150,358 @@ SecurityFilterChain filterChain(HttpSecurity http) throws Exception {<br />
 </ul>
 <h2>Step 4: Validate uploads at the boundary</h2>
 <p>Extension allowlisting is the first layer, not the entire defense:</p>
-<pre><code class="language-java">private static final Set&lt;String&gt; ALLOWED_TYPES =<br />
-    Set.of("pdf", "doc", "docx", "txt", "rtf", "html", "xhtml");<br />
-<br />
-private void validateFile(MultipartFile file) {<br />
-    if (file == null || file.isEmpty()) {<br />
-        throw new SecurityException("File is null or empty");<br />
-    }<br />
-<br />
-    String name = file.getOriginalFilename();<br />
-    if (name == null || name.isBlank()) {<br />
-        throw new SecurityException("File name is missing");<br />
-    }<br />
-<br />
-    if (name.contains("..") || name.contains("/") || name.contains("\\")) {<br />
-        throw new SecurityException("Illegal filename");<br />
-    }<br />
-<br />
-    if (file.getSize() &gt; 10L * 1024 * 1024) {<br />
-        throw new SecurityException("File exceeds 10 MB");<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private static final Set&lt;String&gt; ALLOWED_TYPES =
+    Set.of("pdf", "doc", "docx", "txt", "rtf", "html", "xhtml");
+
+private void validateFile(MultipartFile file) {
+    if (file == null || file.isEmpty()) {
+        throw new SecurityException("File is null or empty");
+    }
+
+    String name = file.getOriginalFilename();
+    if (name == null || name.isBlank()) {
+        throw new SecurityException("File name is missing");
+    }
+
+    if (name.contains("..") || name.contains("/") || name.contains("\\")) {
+        throw new SecurityException("Illegal filename");
+    }
+
+    if (file.getSize() &gt; 10L * 1024 * 1024) {
+        throw new SecurityException("File exceeds 10 MB");
+    }
+}
+</code></pre>
 <p>Production validation should inspect magic bytes, parse with bounded resources, remove active HTML content, and block remote resource loading. Never write an upload using the caller-supplied filename.</p>
 <h2>Step 5: Keep the controller thin</h2>
 <p>The controller validates the request and delegates the printing work:</p>
-<pre><code class="language-java">@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)<br />
-@PreAuthorize("hasRole('USER')")<br />
-public ResponseEntity&lt;String&gt; printDocument(<br />
-        @RequestParam("file") MultipartFile file,<br />
-        Principal principal) throws Exception {<br />
-<br />
-    validateFile(file);<br />
-    printService.printDocument(file.getOriginalFilename(), file.getBytes());<br />
-    return ResponseEntity.accepted().body("Print job accepted");<br />
-}</code></pre>
+<pre><code class="language-java">@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+@PreAuthorize("hasRole('USER')")
+public ResponseEntity&lt;String&gt; printDocument(
+        @RequestParam("file") MultipartFile file,
+        Principal principal) throws Exception {
+
+    validateFile(file);
+    printService.printDocument(file.getOriginalFilename(), file.getBytes());
+    return ResponseEntity.accepted().body("Print job accepted");
+}
+</code></pre>
 <p><code>202 Accepted</code> means the service accepted the work. It does <strong>not</strong> prove that paper emerged from the device. A production API should return a job ID and provide a status resource such as <code>GET /print/jobs/{id}</code>.</p>
 <h2>Step 6: Normalize every format to PDF</h2>
 <p>The printer should receive one predictable representation regardless of what the caller uploaded. PDF is a useful normalization format because it fixes page geometry, fonts, images, and pagination before the operating-system printer driver becomes involved.</p>
 <p>Create one converter component with a small public method. Keep the format-specific methods private so callers cannot accidentally bypass common validation.</p>
-<pre><code class="language-java">@Component<br />
-public class FileToPdfConverter {<br />
-    private static final int MAX_PAGES = 250;<br />
-<br />
-    public byte[] convert(byte[] input, DocumentType type) throws IOException {<br />
-        if (input == null || input.length == 0) {<br />
-            throw new IllegalArgumentException("Document content is empty");<br />
-        }<br />
-<br />
-        byte[] pdf = switch (type) {<br />
-            case PDF -&gt; validateAndCopyPdf(input);<br />
-            case DOC, DOCX -&gt; convertWord(input);<br />
-            case RTF -&gt; convertRtf(input);<br />
-            case HTML, XHTML -&gt; convertHtml(input);<br />
-            case TXT -&gt; convertText(input);<br />
-        };<br />
-<br />
-        validateGeneratedPdf(pdf);<br />
-        return pdf;<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">@Component
+public class FileToPdfConverter {
+    private static final int MAX_PAGES = 250;
+
+    public byte[] convert(byte[] input, DocumentType type) throws IOException {
+        if (input == null || input.length == 0) {
+            throw new IllegalArgumentException("Document content is empty");
+        }
+
+        byte[] pdf = switch (type) {
+            case PDF -&gt; validateAndCopyPdf(input);
+            case DOC, DOCX -&gt; convertWord(input);
+            case RTF -&gt; convertRtf(input);
+            case HTML, XHTML -&gt; convertHtml(input);
+            case TXT -&gt; convertText(input);
+        };
+
+        validateGeneratedPdf(pdf);
+        return pdf;
+    }
+}
+</code></pre>
 <p>Use an enum rather than passing arbitrary strings throughout the service:</p>
-<pre><code class="language-java">public enum DocumentType {<br />
-    PDF, DOC, DOCX, TXT, RTF, HTML, XHTML;<br />
-<br />
-    public static DocumentType fromFilename(String filename) {<br />
-        if (filename == null || filename.isBlank()) {<br />
-            throw new IllegalArgumentException("Filename is required");<br />
-        }<br />
-<br />
-        int dot = filename.lastIndexOf('.');<br />
-        if (dot &lt; 0 || dot == filename.length() - 1) {<br />
-            throw new IllegalArgumentException("Filename has no extension");<br />
-        }<br />
-<br />
-        String extension = filename.substring(dot + 1).toUpperCase(Locale.ROOT);<br />
-        try {<br />
-            return DocumentType.valueOf(extension);<br />
-        } catch (IllegalArgumentException exception) {<br />
-            throw new IllegalArgumentException(<br />
-                "Unsupported document extension: " + extension, exception);<br />
-        }<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">public enum DocumentType {
+    PDF, DOC, DOCX, TXT, RTF, HTML, XHTML;
+
+    public static DocumentType fromFilename(String filename) {
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("Filename is required");
+        }
+
+        int dot = filename.lastIndexOf('.');
+        if (dot &lt; 0 || dot == filename.length() - 1) {
+            throw new IllegalArgumentException("Filename has no extension");
+        }
+
+        String extension = filename.substring(dot + 1).toUpperCase(Locale.ROOT);
+        try {
+            return DocumentType.valueOf(extension);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(
+                "Unsupported document extension: " + extension, exception);
+        }
+    }
+}
+</code></pre>
 <p>Extension detection controls routing, but it does not establish trust. Verify the content signature as well. For example, PDF begins with <code>%PDF-</code>, legacy DOC usually uses the OLE compound-document signature, DOCX is a ZIP package with required Word entries, and RTF begins with <code>{\\rtf</code>. Let the selected parser reject structurally invalid content.</p>
 <h3>Convert existing PDF files</h3>
 <p>Do not blindly return uploaded PDF bytes. Load the document to verify structure, reject encryption when the service does not support passwords, enforce a page limit, and save a clean copy.</p>
-<pre><code class="language-java">private byte[] validateAndCopyPdf(byte[] input) throws IOException {<br />
-    try (PDDocument document = PDDocument.load(input)) {<br />
-        if (document.isEncrypted()) {<br />
-            throw new IllegalArgumentException("Encrypted PDFs are not supported");<br />
-        }<br />
-        if (document.getNumberOfPages() == 0) {<br />
-            throw new IllegalArgumentException("PDF contains no pages");<br />
-        }<br />
-        if (document.getNumberOfPages() &gt; MAX_PAGES) {<br />
-            throw new IllegalArgumentException("PDF exceeds the page limit");<br />
-        }<br />
-<br />
-        ByteArrayOutputStream output = new ByteArrayOutputStream();<br />
-        document.save(output);<br />
-        return output.toByteArray();<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private byte[] validateAndCopyPdf(byte[] input) throws IOException {
+    try (PDDocument document = PDDocument.load(input)) {
+        if (document.isEncrypted()) {
+            throw new IllegalArgumentException("Encrypted PDFs are not supported");
+        }
+        if (document.getNumberOfPages() == 0) {
+            throw new IllegalArgumentException("PDF contains no pages");
+        }
+        if (document.getNumberOfPages() &gt; MAX_PAGES) {
+            throw new IllegalArgumentException("PDF exceeds the page limit");
+        }
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        document.save(output);
+        return output.toByteArray();
+    }
+}
+</code></pre>
 <p>Loading a PDF is structural validation, not malware scanning. Run untrusted documents through an approved scanner and keep PDFBox patched.</p>
 <h3>Convert DOC and DOCX files</h3>
 <p>DOC is the older binary Word format; DOCX is an Open Packaging Convention ZIP containing XML parts. Apache POI is excellent for reading and editing Office documents, but it is not a complete layout engine. Accurate printing requires a renderer that understands fonts, headers, tables, floating images, sections, and Word pagination.</p>
 <p>The inspected project uses Aspose.Words. Load the license once during application startup, then create a new <code>Document</code> for every conversion:</p>
-<pre><code class="language-java">@Component<br />
-public class WordConverter {<br />
-    private final com.aspose.words.License license;<br />
-<br />
-    public WordConverter(ResourceLoader resources) throws Exception {<br />
-        this.license = new com.aspose.words.License();<br />
-        Resource resource = resources.getResource("classpath:license.xml");<br />
-        try (InputStream stream = resource.getInputStream()) {<br />
-            license.setLicense(stream);<br />
-        }<br />
-    }<br />
-<br />
-    public byte[] convert(byte[] input) throws IOException {<br />
-        try (InputStream source = new ByteArrayInputStream(input);<br />
-             ByteArrayOutputStream target = new ByteArrayOutputStream()) {<br />
-<br />
-            com.aspose.words.Document wordDocument =<br />
-                new com.aspose.words.Document(source);<br />
-<br />
-            // Update fields such as page numbers and table of contents.<br />
-            wordDocument.updateFields();<br />
-            wordDocument.save(target, com.aspose.words.SaveFormat.PDF);<br />
-            return target.toByteArray();<br />
-        } catch (Exception exception) {<br />
-            throw new IOException("Word-to-PDF conversion failed", exception);<br />
-        }<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">@Component
+public class WordConverter {
+    private final com.aspose.words.License license;
+
+    public WordConverter(ResourceLoader resources) throws Exception {
+        this.license = new com.aspose.words.License();
+        Resource resource = resources.getResource("classpath:license.xml");
+        try (InputStream stream = resource.getInputStream()) {
+            license.setLicense(stream);
+        }
+    }
+
+    public byte[] convert(byte[] input) throws IOException {
+        try (InputStream source = new ByteArrayInputStream(input);
+             ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+
+            com.aspose.words.Document wordDocument =
+                new com.aspose.words.Document(source);
+
+            // Update fields such as page numbers and table of contents.
+            wordDocument.updateFields();
+            wordDocument.save(target, com.aspose.words.SaveFormat.PDF);
+            return target.toByteArray();
+        } catch (Exception exception) {
+            throw new IOException("Word-to-PDF conversion failed", exception);
+        }
+    }
+}
+</code></pre>
 <p>Delegate from the main converter:</p>
-<pre><code class="language-java">private final WordConverter wordConverter;<br />
-<br />
-private byte[] convertWord(byte[] input) throws IOException {<br />
-    return wordConverter.convert(input);<br />
-}</code></pre>
+<pre><code class="language-java">private final WordConverter wordConverter;
+
+private byte[] convertWord(byte[] input) throws IOException {
+    return wordConverter.convert(input);
+}
+</code></pre>
 <p>Fonts used by the source document must exist in the conversion environment or be explicitly mapped. Test tables, page breaks, headers, footers, embedded images, equations, and non-Latin text. If commercial licensing is unsuitable, a common alternative is an isolated LibreOffice headless worker. Do not start a new LibreOffice process for every HTTP request; use a bounded worker pool and timeouts.</p>
 <h3>Convert RTF files</h3>
 <p>RTF contains formatting instructions, fonts, colors, tables, and embedded objects. Converting it by reading it into Swing and writing it back does not reliably produce HTML; <code>RTFEditorKit.write</code> writes RTF syntax, not an HTML rendition.</p>
 <p>Aspose.Words can auto-detect and render RTF directly, which preserves more layout and removes the unreliable RTF-to-HTML intermediate step:</p>
-<pre><code class="language-java">private byte[] convertRtf(byte[] input) throws IOException {<br />
-    try (InputStream source = new ByteArrayInputStream(input);<br />
-         ByteArrayOutputStream target = new ByteArrayOutputStream()) {<br />
-<br />
-        LoadOptions options = new LoadOptions();<br />
-        options.setLoadFormat(LoadFormat.RTF);<br />
-<br />
-        com.aspose.words.Document rtfDocument =<br />
-            new com.aspose.words.Document(source, options);<br />
-        rtfDocument.save(target, SaveFormat.PDF);<br />
-        return target.toByteArray();<br />
-    } catch (Exception exception) {<br />
-        throw new IOException("RTF-to-PDF conversion failed", exception);<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private byte[] convertRtf(byte[] input) throws IOException {
+    try (InputStream source = new ByteArrayInputStream(input);
+         ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+
+        LoadOptions options = new LoadOptions();
+        options.setLoadFormat(LoadFormat.RTF);
+
+        com.aspose.words.Document rtfDocument =
+            new com.aspose.words.Document(source, options);
+        rtfDocument.save(target, SaveFormat.PDF);
+        return target.toByteArray();
+    } catch (Exception exception) {
+        throw new IOException("RTF-to-PDF conversion failed", exception);
+    }
+}
+</code></pre>
 <p>If using LibreOffice instead, write the RTF to a private temporary directory, invoke the converter with a strict timeout, validate the resulting PDF, and securely remove both files afterward.</p>
 <h3>Convert HTML and XHTML files</h3>
 <p>HTML conversion has two independent concerns: <strong>security</strong> and <strong>layout</strong>. Jsoup can sanitize markup, while iText XML Worker can render a limited XHTML/CSS subset. Sanitizing and rendering are not the same operation.</p>
 <p>First decode UTF-8 and remove active or remote content with an explicit allowlist:</p>
-<pre><code class="language-java">private String sanitizeHtml(byte[] input) {<br />
-    String html = new String(input, StandardCharsets.UTF_8);<br />
-    if (html.isBlank()) {<br />
-        throw new IllegalArgumentException("HTML document is blank");<br />
-    }<br />
-<br />
-    Safelist allowed = Safelist.relaxed()<br />
-        .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td")<br />
-        .addAttributes(":all", "class")<br />
-        .addAttributes("td", "colspan", "rowspan")<br />
-        .addAttributes("th", "colspan", "rowspan")<br />
-        .addProtocols("a", "href", "https");<br />
-<br />
-    Document.OutputSettings outputSettings = new Document.OutputSettings()<br />
-        .syntax(Document.OutputSettings.Syntax.xml)<br />
-        .charset(StandardCharsets.UTF_8)<br />
-        .prettyPrint(false);<br />
-<br />
-    return Jsoup.clean(html, "", allowed, outputSettings);<br />
-}</code></pre>
+<pre><code class="language-java">private String sanitizeHtml(byte[] input) {
+    String html = new String(input, StandardCharsets.UTF_8);
+    if (html.isBlank()) {
+        throw new IllegalArgumentException("HTML document is blank");
+    }
+
+    Safelist allowed = Safelist.relaxed()
+        .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td")
+        .addAttributes(":all", "class")
+        .addAttributes("td", "colspan", "rowspan")
+        .addAttributes("th", "colspan", "rowspan")
+        .addProtocols("a", "href", "https");
+
+    Document.OutputSettings outputSettings = new Document.OutputSettings()
+        .syntax(Document.OutputSettings.Syntax.xml)
+        .charset(StandardCharsets.UTF_8)
+        .prettyPrint(false);
+
+    return Jsoup.clean(html, "", allowed, outputSettings);
+}
+</code></pre>
 <p>This example deliberately excludes scripts, iframes, forms, styles, local-file URLs, and remote images. If images are required, download them through a controlled fetcher that blocks private networks, applies byte and time limits, verifies image content, and supplies local bytes to the renderer. Allowing the renderer to fetch arbitrary URLs creates a server-side request forgery risk.</p>
 <p>Next render sanitized XHTML:</p>
-<pre><code class="language-java">private byte[] convertHtml(byte[] input) throws IOException {<br />
-    String xhtml = sanitizeHtml(input);<br />
-<br />
-    try (ByteArrayOutputStream target = new ByteArrayOutputStream()) {<br />
-        com.itextpdf.text.Document pdf = new com.itextpdf.text.Document(<br />
-            com.itextpdf.text.PageSize.A4, 45, 45, 50, 50);<br />
-        PdfWriter writer = PdfWriter.getInstance(pdf, target);<br />
-        pdf.open();<br />
-<br />
-        try (InputStream markup = new ByteArrayInputStream(<br />
-                xhtml.getBytes(StandardCharsets.UTF_8))) {<br />
-            XMLWorkerHelper.getInstance().parseXHtml(<br />
-                writer,<br />
-                pdf,<br />
-                markup,<br />
-                StandardCharsets.UTF_8,<br />
-                new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS));<br />
-        }<br />
-<br />
-        pdf.close();<br />
-        return target.toByteArray();<br />
-    } catch (Exception exception) {<br />
-        throw new IOException("HTML-to-PDF conversion failed", exception);<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private byte[] convertHtml(byte[] input) throws IOException {
+    String xhtml = sanitizeHtml(input);
+
+    try (ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+        com.itextpdf.text.Document pdf = new com.itextpdf.text.Document(
+            com.itextpdf.text.PageSize.A4, 45, 45, 50, 50);
+        PdfWriter writer = PdfWriter.getInstance(pdf, target);
+        pdf.open();
+
+        try (InputStream markup = new ByteArrayInputStream(
+                xhtml.getBytes(StandardCharsets.UTF_8))) {
+            XMLWorkerHelper.getInstance().parseXHtml(
+                writer,
+                pdf,
+                markup,
+                StandardCharsets.UTF_8,
+                new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS));
+        }
+
+        pdf.close();
+        return target.toByteArray();
+    } catch (Exception exception) {
+        throw new IOException("HTML-to-PDF conversion failed", exception);
+    }
+}
+</code></pre>
 <p>XML Worker and iText 5 are older technologies with licensing constraints and limited modern CSS support. For complex HTML, consider a maintained renderer or a sandboxed browser-based PDF worker. Whichever engine you choose, pin versions, disable uncontrolled network access, and test the exact CSS subset you promise.</p>
 <h3>Convert plain-text files</h3>
 <p>Plain text has no page model. The converter must choose paper size, margins, font, font size, line spacing, wrapping, and pagination. The following PDFBox 2.x implementation embeds a Unicode TrueType font from <code>src/main/resources/fonts/NotoSans-Regular.ttf</code>.</p>
-<pre><code class="language-java">private byte[] convertText(byte[] input) throws IOException {<br />
-    String text = new String(input, StandardCharsets.UTF_8)<br />
-        .replace("\r\n", "\n")<br />
-        .replace('\r', '\n');<br />
-<br />
-    try (PDDocument document = new PDDocument();<br />
-         InputStream fontStream = getClass().getResourceAsStream(<br />
-             "/fonts/NotoSans-Regular.ttf")) {<br />
-<br />
-        if (fontStream == null) {<br />
-            throw new IllegalStateException("Unicode font resource is missing");<br />
-        }<br />
-<br />
-        PDType0Font font = PDType0Font.load(document, fontStream, true);<br />
-        PDRectangle pageSize = PDRectangle.A4;<br />
-        float margin = 50f;<br />
-        float fontSize = 11f;<br />
-        float leading = 15f;<br />
-        float usableWidth = pageSize.getWidth() - (2 * margin);<br />
-<br />
-        List&lt;String&gt; visualLines = new ArrayList&lt;&gt;();<br />
-        for (String logicalLine : text.split("\n", -1)) {<br />
-            visualLines.addAll(wrapLine(logicalLine, font, fontSize, usableWidth));<br />
-        }<br />
-<br />
-        PDPageContentStream stream = null;<br />
-        float y = 0;<br />
-        try {<br />
-            for (String line : visualLines) {<br />
-                if (stream == null || y &lt; margin + leading) {<br />
-                    if (stream != null) {<br />
-                        stream.endText();<br />
-                        stream.close();<br />
-                    }<br />
-<br />
-                    if (document.getNumberOfPages() &gt;= MAX_PAGES) {<br />
-                        throw new IllegalArgumentException("Text exceeds page limit");<br />
-                    }<br />
-<br />
-                    PDPage page = new PDPage(pageSize);<br />
-                    document.addPage(page);<br />
-                    stream = new PDPageContentStream(document, page);<br />
-                    stream.beginText();<br />
-                    stream.setFont(font, fontSize);<br />
-                    y = pageSize.getHeight() - margin;<br />
-                    stream.newLineAtOffset(margin, y);<br />
-                }<br />
-<br />
-                stream.showText(line);<br />
-                stream.newLineAtOffset(0, -leading);<br />
-                y -= leading;<br />
-            }<br />
-        } finally {<br />
-            if (stream != null) {<br />
-                stream.endText();<br />
-                stream.close();<br />
-            }<br />
-        }<br />
-<br />
-        ByteArrayOutputStream target = new ByteArrayOutputStream();<br />
-        document.save(target);<br />
-        return target.toByteArray();<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private byte[] convertText(byte[] input) throws IOException {
+    String text = new String(input, StandardCharsets.UTF_8)
+        .replace("\r\n", "\n")
+        .replace('\r', '\n');
+
+    try (PDDocument document = new PDDocument();
+         InputStream fontStream = getClass().getResourceAsStream(
+             "/fonts/NotoSans-Regular.ttf")) {
+
+        if (fontStream == null) {
+            throw new IllegalStateException("Unicode font resource is missing");
+        }
+
+        PDType0Font font = PDType0Font.load(document, fontStream, true);
+        PDRectangle pageSize = PDRectangle.A4;
+        float margin = 50f;
+        float fontSize = 11f;
+        float leading = 15f;
+        float usableWidth = pageSize.getWidth() - (2 * margin);
+
+        List&lt;String&gt; visualLines = new ArrayList&lt;&gt;();
+        for (String logicalLine : text.split("\n", -1)) {
+            visualLines.addAll(wrapLine(logicalLine, font, fontSize, usableWidth));
+        }
+
+        PDPageContentStream stream = null;
+        float y = 0;
+        try {
+            for (String line : visualLines) {
+                if (stream == null || y &lt; margin + leading) {
+                    if (stream != null) {
+                        stream.endText();
+                        stream.close();
+                    }
+
+                    if (document.getNumberOfPages() &gt;= MAX_PAGES) {
+                        throw new IllegalArgumentException("Text exceeds page limit");
+                    }
+
+                    PDPage page = new PDPage(pageSize);
+                    document.addPage(page);
+                    stream = new PDPageContentStream(document, page);
+                    stream.beginText();
+                    stream.setFont(font, fontSize);
+                    y = pageSize.getHeight() - margin;
+                    stream.newLineAtOffset(margin, y);
+                }
+
+                stream.showText(line);
+                stream.newLineAtOffset(0, -leading);
+                y -= leading;
+            }
+        } finally {
+            if (stream != null) {
+                stream.endText();
+                stream.close();
+            }
+        }
+
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        document.save(target);
+        return target.toByteArray();
+    }
+}
+</code></pre>
 <p>Wrap each logical line by measuring rendered glyph width rather than counting characters:</p>
-<pre><code class="language-java">private List&lt;String&gt; wrapLine(<br />
-        String line,<br />
-        PDFont font,<br />
-        float fontSize,<br />
-        float maximumWidth) throws IOException {<br />
-<br />
-    if (line.isEmpty()) return List.of(" ");<br />
-<br />
-    List&lt;String&gt; result = new ArrayList&lt;&gt;();<br />
-    StringBuilder current = new StringBuilder();<br />
-<br />
-    for (String word : line.split("\\s+")) {<br />
-        String candidate = current.isEmpty() ? word : current + " " + word;<br />
-        float width = font.getStringWidth(candidate) / 1000f * fontSize;<br />
-<br />
-        if (width &lt;= maximumWidth) {<br />
-            current.setLength(0);<br />
-            current.append(candidate);<br />
-        } else {<br />
-            if (!current.isEmpty()) result.add(current.toString());<br />
-            current.setLength(0);<br />
-            current.append(word);<br />
-        }<br />
-    }<br />
-<br />
-    if (!current.isEmpty()) result.add(current.toString());<br />
-    return result;<br />
-}</code></pre>
+<pre><code class="language-java">private List&lt;String&gt; wrapLine(
+        String line,
+        PDFont font,
+        float fontSize,
+        float maximumWidth) throws IOException {
+
+    if (line.isEmpty()) return List.of(" ");
+
+    List&lt;String&gt; result = new ArrayList&lt;&gt;();
+    StringBuilder current = new StringBuilder();
+
+    for (String word : line.split("\\s+")) {
+        String candidate = current.isEmpty() ? word : current + " " + word;
+        float width = font.getStringWidth(candidate) / 1000f * fontSize;
+
+        if (width &lt;= maximumWidth) {
+            current.setLength(0);
+            current.append(candidate);
+        } else {
+            if (!current.isEmpty()) result.add(current.toString());
+            current.setLength(0);
+            current.append(word);
+        }
+    }
+
+    if (!current.isEmpty()) result.add(current.toString());
+    return result;
+}
+</code></pre>
 <p>For production, also split a single word that is wider than the page, replace unsupported control characters, detect malformed UTF-8 rather than silently replacing it, and use PDFBox's newer APIs if upgrading to PDFBox 3.</p>
 <h3>Validate every generated PDF</h3>
 <p>Every format-specific method ends at the same postcondition: a readable, non-empty, bounded PDF.</p>
-<pre><code class="language-java">private void validateGeneratedPdf(byte[] pdf) throws IOException {<br />
-    if (pdf == null || pdf.length &lt; 5 ||<br />
-            pdf[0] != '%' || pdf[1] != 'P' ||<br />
-            pdf[2] != 'D' || pdf[3] != 'F' || pdf[4] != '-') {<br />
-        throw new IOException("Converter did not produce a PDF document");<br />
-    }<br />
-<br />
-    try (PDDocument document = PDDocument.load(pdf)) {<br />
-        int pages = document.getNumberOfPages();<br />
-        if (pages &lt; 1 || pages &gt; MAX_PAGES) {<br />
-            throw new IOException("Generated PDF page count is outside limits");<br />
-        }<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">private void validateGeneratedPdf(byte[] pdf) throws IOException {
+    if (pdf == null || pdf.length &lt; 5 ||
+            pdf[0] != '%' || pdf[1] != 'P' ||
+            pdf[2] != 'D' || pdf[3] != 'F' || pdf[4] != '-') {
+        throw new IOException("Converter did not produce a PDF document");
+    }
+
+    try (PDDocument document = PDDocument.load(pdf)) {
+        int pages = document.getNumberOfPages();
+        if (pages &lt; 1 || pages &gt; MAX_PAGES) {
+            throw new IOException("Generated PDF page count is outside limits");
+        }
+    }
+}
+</code></pre>
 <h3>Wire conversion into the print service</h3>
 <p>The orchestration layer now has no format-specific printing branches:</p>
-<pre><code class="language-java">@Service<br />
-public class PrintService {<br />
-    private final FileToPdfConverter converter;<br />
-    private final PrinterService printerService;<br />
-<br />
-    public void printDocument(String filename, byte[] content) throws Exception {<br />
-        DocumentType type = DocumentType.fromFilename(filename);<br />
-        byte[] pdf = converter.convert(content, type);<br />
-<br />
-        javax.print.PrintService printer = printerService.fetchPrintService();<br />
-        printerService.printPdf(pdf, printer);<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">@Service
+public class PrintService {
+    private final FileToPdfConverter converter;
+    private final PrinterService printerService;
+
+    public void printDocument(String filename, byte[] content) throws Exception {
+        DocumentType type = DocumentType.fromFilename(filename);
+        byte[] pdf = converter.convert(content, type);
+
+        javax.print.PrintService printer = printerService.fetchPrintService();
+        printerService.printPdf(pdf, printer);
+    }
+}
+</code></pre>
 <p>That is the value of normalization: PDF, Word, RTF, HTML, XHTML, and TXT all converge before printer discovery and job submission.</p>
 <h2>Why convert every document to PDF before printing?</h2>
 <p>It may seem wasteful to convert a Word, RTF, HTML, or text document when the target printer might accept some of those formats. The conversion step is actually the architectural boundary that makes the printing service predictable.</p>
@@ -552,63 +570,66 @@ public class PrintService {<br />
 <h2>Step 7: Discover an approved printer</h2>
 <p>Java Print Service represents an operating-system print queue through <code>javax.print.PrintService</code>. Discovery returns queues visible to the identity running the JVM—not necessarily the printers visible to the developer's interactive desktop.</p>
 <p>Wrap the static lookup API so the rest of the application can be unit-tested:</p>
-<pre><code class="language-java">public interface PrinterRegistry {<br />
-    List&lt;javax.print.PrintService&gt; availablePrinters();<br />
-}<br />
-<br />
-@Component<br />
-public class JavaPrinterRegistry implements PrinterRegistry {<br />
-    @Override<br />
-    public List&lt;javax.print.PrintService&gt; availablePrinters() {<br />
-        return List.of(PrintServiceLookup.lookupPrintServices(null, null));<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">public interface PrinterRegistry {
+    List&lt;javax.print.PrintService&gt; availablePrinters();
+}
+
+@Component
+public class JavaPrinterRegistry implements PrinterRegistry {
+    @Override
+    public List&lt;javax.print.PrintService&gt; availablePrinters() {
+        return List.of(PrintServiceLookup.lookupPrintServices(null, null));
+    }
+}
+</code></pre>
 <p>Select only a configured printer. Do not accept an unrestricted printer name from an HTTP request because that lets callers enumerate or target any queue available to the service account.</p>
-<pre><code class="language-java">@Service<br />
-public class PrinterSelector {<br />
-    private final PrinterRegistry registry;<br />
-    private final PrinterProperties properties;<br />
-<br />
-    public javax.print.PrintService selectConfiguredPrinter() {<br />
-        String requested = properties.getName().trim();<br />
-<br />
-        return registry.availablePrinters().stream()<br />
-            .filter(printer -&gt; printer.getName().equalsIgnoreCase(requested))<br />
-            .findFirst()<br />
-            .orElseThrow(() -&gt; new PrinterUnavailableException(<br />
-                "Configured printer is not installed or visible: " + requested));<br />
-    }<br />
-<br />
-    public List&lt;String&gt; visiblePrinterNamesForDiagnostics() {<br />
-        return registry.availablePrinters().stream()<br />
-            .map(javax.print.PrintService::getName)<br />
-            .sorted(String.CASE_INSENSITIVE_ORDER)<br />
-            .toList();<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">@Service
+public class PrinterSelector {
+    private final PrinterRegistry registry;
+    private final PrinterProperties properties;
+
+    public javax.print.PrintService selectConfiguredPrinter() {
+        String requested = properties.getName().trim();
+
+        return registry.availablePrinters().stream()
+            .filter(printer -&gt; printer.getName().equalsIgnoreCase(requested))
+            .findFirst()
+            .orElseThrow(() -&gt; new PrinterUnavailableException(
+                "Configured printer is not installed or visible: " + requested));
+    }
+
+    public List&lt;String&gt; visiblePrinterNamesForDiagnostics() {
+        return registry.availablePrinters().stream()
+            .map(javax.print.PrintService::getName)
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
+    }
+}
+</code></pre>
 <p>Expose printer names only through an administrator-only diagnostic endpoint, and consider printer names sensitive infrastructure information.</p>
 <h3>Check queue state before submitting</h3>
 <p>A discovered queue may be stopped or rejecting new work. Inspect the standard attributes when the driver provides them:</p>
-<pre><code class="language-java">public void requireAvailable(javax.print.PrintService printer) {<br />
-    PrinterIsAcceptingJobs accepting =<br />
-        printer.getAttribute(PrinterIsAcceptingJobs.class);<br />
-    PrinterState state = printer.getAttribute(PrinterState.class);<br />
-    QueuedJobCount queued = printer.getAttribute(QueuedJobCount.class);<br />
-<br />
-    if (PrinterIsAcceptingJobs.NOT_ACCEPTING_JOBS.equals(accepting)) {<br />
-        throw new PrinterUnavailableException(<br />
-            "Printer is not accepting jobs: " + printer.getName());<br />
-    }<br />
-<br />
-    if (PrinterState.STOPPED.equals(state)) {<br />
-        throw new PrinterUnavailableException(<br />
-            "Printer queue is stopped: " + printer.getName());<br />
-    }<br />
-<br />
-    int queueDepth = queued == null ? -1 : queued.getValue();<br />
-    LOGGER.info("Printer selected: name={}, state={}, queueDepth={}",<br />
-        printer.getName(), state, queueDepth);<br />
-}</code></pre>
+<pre><code class="language-java">public void requireAvailable(javax.print.PrintService printer) {
+    PrinterIsAcceptingJobs accepting =
+        printer.getAttribute(PrinterIsAcceptingJobs.class);
+    PrinterState state = printer.getAttribute(PrinterState.class);
+    QueuedJobCount queued = printer.getAttribute(QueuedJobCount.class);
+
+    if (PrinterIsAcceptingJobs.NOT_ACCEPTING_JOBS.equals(accepting)) {
+        throw new PrinterUnavailableException(
+            "Printer is not accepting jobs: " + printer.getName());
+    }
+
+    if (PrinterState.STOPPED.equals(state)) {
+        throw new PrinterUnavailableException(
+            "Printer queue is stopped: " + printer.getName());
+    }
+
+    int queueDepth = queued == null ? -1 : queued.getValue();
+    LOGGER.info("Printer selected: name={}, state={}, queueDepth={}",
+        printer.getName(), state, queueDepth);
+}
+</code></pre>
 <p>Many drivers return <code>null</code> for attributes they cannot report. Treat unknown state separately from a known failure; do not interpret <code>null</code> as proof that the physical device is ready.</p>
 <p>Failing closed is safer than silently choosing the default printer. An unexpected fallback could place a confidential document in another department. If fallback is a business requirement, configure one explicit fallback queue, authorize it, and record the failover in the audit event.</p>
 <h3>Understand deployment identity</h3>
@@ -622,90 +643,93 @@ public class PrinterSelector {<br />
 <p>Run a startup health indicator under the real service identity. It should confirm that the configured queue is visible without actually printing a page.</p>
 <h2>Step 8: Map configuration to Java print attributes</h2>
 <p>Java Print Service expresses job options as typed <code>Attribute</code> objects. The application must translate every supported configuration value explicitly.</p>
-<pre><code class="language-java">@Component<br />
-@ConfigurationProperties(prefix = "printer")<br />
-public class PrinterProperties {<br />
-    private String name;<br />
-    private int copies = 1;<br />
-    private String mediaSize = "ISO_A4";<br />
-    private String chromaticity = "MONOCHROME";<br />
-    private String printQuality = "NORMAL";<br />
-    private String orientation = "PORTRAIT";<br />
-    private String duplex = "ONE_SIDED";<br />
-    private String pageRange = "";<br />
-    private String jobName = "Document_Print_Job";<br />
-<br />
-    // Getters and setters omitted.<br />
-}</code></pre>
+<pre><code class="language-java">@Component
+@ConfigurationProperties(prefix = "printer")
+public class PrinterProperties {
+    private String name;
+    private int copies = 1;
+    private String mediaSize = "ISO_A4";
+    private String chromaticity = "MONOCHROME";
+    private String printQuality = "NORMAL";
+    private String orientation = "PORTRAIT";
+    private String duplex = "ONE_SIDED";
+    private String pageRange = "";
+    private String jobName = "Document_Print_Job";
+
+    // Getters and setters omitted.
+}
+</code></pre>
 <p>Create candidates from configuration:</p>
-<pre><code class="language-java">private List&lt;Attribute&gt; requestedAttributes() {<br />
-    List&lt;Attribute&gt; requested = new ArrayList&lt;&gt;();<br />
-    requested.add(new Copies(properties.getCopies()));<br />
-    requested.add(new JobName(<br />
-        properties.getJobName(), Locale.getDefault()));<br />
-    requested.add(parseMedia(properties.getMediaSize()));<br />
-    requested.add(parseChromaticity(properties.getChromaticity()));<br />
-    requested.add(parseQuality(properties.getPrintQuality()));<br />
-    requested.add(parseOrientation(properties.getOrientation()));<br />
-    requested.add(parseSides(properties.getDuplex()));<br />
-<br />
-    if (properties.getPageRange() != null &amp;&amp;<br />
-            !properties.getPageRange().isBlank()) {<br />
-        requested.add(new PageRanges(properties.getPageRange()));<br />
-    }<br />
-    return requested;<br />
-}</code></pre>
+<pre><code class="language-java">private List&lt;Attribute&gt; requestedAttributes() {
+    List&lt;Attribute&gt; requested = new ArrayList&lt;&gt;();
+    requested.add(new Copies(properties.getCopies()));
+    requested.add(new JobName(
+        properties.getJobName(), Locale.getDefault()));
+    requested.add(parseMedia(properties.getMediaSize()));
+    requested.add(parseChromaticity(properties.getChromaticity()));
+    requested.add(parseQuality(properties.getPrintQuality()));
+    requested.add(parseOrientation(properties.getOrientation()));
+    requested.add(parseSides(properties.getDuplex()));
+
+    if (properties.getPageRange() != null &amp;&amp;
+            !properties.getPageRange().isBlank()) {
+        requested.add(new PageRanges(properties.getPageRange()));
+    }
+    return requested;
+}
+</code></pre>
 <p>Map strings with strict switches so a typo fails during validation rather than silently changing output:</p>
-<pre><code class="language-java">private MediaSizeName parseMedia(String value) {<br />
-    return switch (value.toUpperCase(Locale.ROOT)) {<br />
-        case "ISO_A4" -&gt; MediaSizeName.ISO_A4;<br />
-        case "ISO_A5" -&gt; MediaSizeName.ISO_A5;<br />
-        case "LETTER", "NA_LETTER" -&gt; MediaSizeName.NA_LETTER;<br />
-        case "LEGAL", "NA_LEGAL" -&gt; MediaSizeName.NA_LEGAL;<br />
-        default -&gt; throw new IllegalArgumentException(<br />
-            "Unsupported configured media size: " + value);<br />
-    };<br />
-}<br />
-<br />
-private Chromaticity parseChromaticity(String value) {<br />
-    return switch (value.toUpperCase(Locale.ROOT)) {<br />
-        case "COLOR" -&gt; Chromaticity.COLOR;<br />
-        case "MONOCHROME" -&gt; Chromaticity.MONOCHROME;<br />
-        default -&gt; throw new IllegalArgumentException(<br />
-            "Unsupported chromaticity: " + value);<br />
-    };<br />
-}<br />
-<br />
-private PrintQuality parseQuality(String value) {<br />
-    return switch (value.toUpperCase(Locale.ROOT)) {<br />
-        case "DRAFT", "LOW" -&gt; PrintQuality.DRAFT;<br />
-        case "NORMAL" -&gt; PrintQuality.NORMAL;<br />
-        case "HIGH" -&gt; PrintQuality.HIGH;<br />
-        default -&gt; throw new IllegalArgumentException(<br />
-            "Unsupported print quality: " + value);<br />
-    };<br />
-}<br />
-<br />
-private OrientationRequested parseOrientation(String value) {<br />
-    return switch (value.toUpperCase(Locale.ROOT)) {<br />
-        case "PORTRAIT" -&gt; OrientationRequested.PORTRAIT;<br />
-        case "LANDSCAPE" -&gt; OrientationRequested.LANDSCAPE;<br />
-        case "REVERSE_LANDSCAPE" -&gt; OrientationRequested.REVERSE_LANDSCAPE;<br />
-        case "REVERSE_PORTRAIT" -&gt; OrientationRequested.REVERSE_PORTRAIT;<br />
-        default -&gt; throw new IllegalArgumentException(<br />
-            "Unsupported orientation: " + value);<br />
-    };<br />
-}<br />
-<br />
-private Sides parseSides(String value) {<br />
-    return switch (value.toUpperCase(Locale.ROOT)) {<br />
-        case "ONE_SIDED" -&gt; Sides.ONE_SIDED;<br />
-        case "DUPLEX", "TWO_SIDED_LONG_EDGE" -&gt; Sides.DUPLEX;<br />
-        case "TUMBLE", "TWO_SIDED_SHORT_EDGE" -&gt; Sides.TUMBLE;<br />
-        default -&gt; throw new IllegalArgumentException(<br />
-            "Unsupported duplex mode: " + value);<br />
-    };<br />
-}</code></pre>
+<pre><code class="language-java">private MediaSizeName parseMedia(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "ISO_A4" -&gt; MediaSizeName.ISO_A4;
+        case "ISO_A5" -&gt; MediaSizeName.ISO_A5;
+        case "LETTER", "NA_LETTER" -&gt; MediaSizeName.NA_LETTER;
+        case "LEGAL", "NA_LEGAL" -&gt; MediaSizeName.NA_LEGAL;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported configured media size: " + value);
+    };
+}
+
+private Chromaticity parseChromaticity(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "COLOR" -&gt; Chromaticity.COLOR;
+        case "MONOCHROME" -&gt; Chromaticity.MONOCHROME;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported chromaticity: " + value);
+    };
+}
+
+private PrintQuality parseQuality(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "DRAFT", "LOW" -&gt; PrintQuality.DRAFT;
+        case "NORMAL" -&gt; PrintQuality.NORMAL;
+        case "HIGH" -&gt; PrintQuality.HIGH;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported print quality: " + value);
+    };
+}
+
+private OrientationRequested parseOrientation(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "PORTRAIT" -&gt; OrientationRequested.PORTRAIT;
+        case "LANDSCAPE" -&gt; OrientationRequested.LANDSCAPE;
+        case "REVERSE_LANDSCAPE" -&gt; OrientationRequested.REVERSE_LANDSCAPE;
+        case "REVERSE_PORTRAIT" -&gt; OrientationRequested.REVERSE_PORTRAIT;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported orientation: " + value);
+    };
+}
+
+private Sides parseSides(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "ONE_SIDED" -&gt; Sides.ONE_SIDED;
+        case "DUPLEX", "TWO_SIDED_LONG_EDGE" -&gt; Sides.DUPLEX;
+        case "TUMBLE", "TWO_SIDED_SHORT_EDGE" -&gt; Sides.TUMBLE;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported duplex mode: " + value);
+    };
+}
+</code></pre>
 <p>Common mappings are:</p>
 <table>
 <thead>
@@ -753,80 +777,83 @@ private Sides parseSides(String value) {<br />
 </tbody></table>
 <h3>Negotiate capabilities with the selected queue</h3>
 <p>Configuration describes what the caller wants; the printer decides what it supports. Test every attribute against the selected queue and the <code>PAGEABLE</code> flavor used by PDFBox:</p>
-<pre><code class="language-java">private PrintRequestAttributeSet supportedAttributes(<br />
-        javax.print.PrintService printer) {<br />
-<br />
-    DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PAGEABLE;<br />
-    PrintRequestAttributeSet accepted =<br />
-        new HashPrintRequestAttributeSet();<br />
-<br />
-    for (Attribute attribute : requestedAttributes()) {<br />
-        boolean supported = printer.isAttributeValueSupported(<br />
-            attribute, flavor, accepted);<br />
-<br />
-        if (supported) {<br />
-            accepted.add(attribute);<br />
-            continue;<br />
-        }<br />
-<br />
-        if (attribute instanceof MediaSizeName ||<br />
-            attribute instanceof Sides) {<br />
-            throw new IllegalArgumentException(<br />
-                "Printer does not support required option: " + attribute);<br />
-        }<br />
-<br />
-        LOGGER.warn("Omitting unsupported print attribute: printer={}, value={}",<br />
-            printer.getName(), attribute);<br />
-    }<br />
-    return accepted;<br />
-}</code></pre>
+<pre><code class="language-java">private PrintRequestAttributeSet supportedAttributes(
+        javax.print.PrintService printer) {
+
+    DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PAGEABLE;
+    PrintRequestAttributeSet accepted =
+        new HashPrintRequestAttributeSet();
+
+    for (Attribute attribute : requestedAttributes()) {
+        boolean supported = printer.isAttributeValueSupported(
+            attribute, flavor, accepted);
+
+        if (supported) {
+            accepted.add(attribute);
+            continue;
+        }
+
+        if (attribute instanceof MediaSizeName ||
+            attribute instanceof Sides) {
+            throw new IllegalArgumentException(
+                "Printer does not support required option: " + attribute);
+        }
+
+        LOGGER.warn("Omitting unsupported print attribute: printer={}, value={}",
+            printer.getName(), attribute);
+    }
+    return accepted;
+}
+</code></pre>
 <p>The policy above treats paper size and duplex as mandatory and other options as optional. Adjust that rule for the business case. For legal documents, selecting the wrong media or one-sided output may be a hard failure.</p>
 <p>To help administrators diagnose a queue, enumerate supported categories and values:</p>
-<pre><code class="language-java">for (Class&lt;?&gt; category : printer.getSupportedAttributeCategories()) {<br />
-    Object values = printer.getSupportedAttributeValues(<br />
-        category, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);<br />
-    LOGGER.debug("Printer capability: category={}, values={}",<br />
-        category.getSimpleName(), values);<br />
-}</code></pre>
+<pre><code class="language-java">for (Class&lt;?&gt; category : printer.getSupportedAttributeCategories()) {
+    Object values = printer.getSupportedAttributeValues(
+        category, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+    LOGGER.debug("Printer capability: category={}, values={}",
+        category.getSimpleName(), values);
+}
+</code></pre>
 <p>Some capabilities are vendor-specific. Paper trays often appear as <code>MediaTray</code> values returned by the driver rather than portable string constants. Discover and map them by a controlled configuration identifier; do not assume <code>MANUAL_FEED</code> exists on every device.</p>
 <h2>Step 9: Render normalized PDF pages with PDFBox</h2>
 <p>PDFBox implements Java's <code>Pageable</code> contract. <code>PDFPageable</code> supplies each PDF page to <code>PrinterJob</code>, which delegates final rasterization and transport to the installed driver.</p>
-<pre><code class="language-java">@Service<br />
-public class PrinterService {<br />
-    private final PrinterSelector selector;<br />
-    private final PrinterAttributeFactory attributes;<br />
-<br />
-    public void printPdf(byte[] pdfBytes) throws IOException, PrinterException {<br />
-        javax.print.PrintService printer =<br />
-            selector.selectConfiguredPrinter();<br />
-        selector.requireAvailable(printer);<br />
-<br />
-        try (PDDocument document = PDDocument.load(pdfBytes)) {<br />
-            if (document.isEncrypted()) {<br />
-                throw new IllegalArgumentException(<br />
-                    "Encrypted PDF cannot be printed");<br />
-            }<br />
-<br />
-            PrinterJob job = PrinterJob.getPrinterJob();<br />
-            job.setPrintService(printer);<br />
-            job.setJobName(attributes.jobName());<br />
-            job.setPageable(new PDFPageable(document));<br />
-<br />
-            PrintRequestAttributeSet request =<br />
-                attributes.forPrinter(printer);<br />
-<br />
-            LOGGER.info(<br />
-                "Submitting print job: printer={}, pages={}, attributes={}",<br />
-                printer.getName(), document.getNumberOfPages(), request);<br />
-<br />
-            job.print(request);<br />
-<br />
-            LOGGER.info(<br />
-                "Print job returned from spooler submission: printer={}",<br />
-                printer.getName());<br />
-        }<br />
-    }<br />
-}</code></pre>
+<pre><code class="language-java">@Service
+public class PrinterService {
+    private final PrinterSelector selector;
+    private final PrinterAttributeFactory attributes;
+
+    public void printPdf(byte[] pdfBytes) throws IOException, PrinterException {
+        javax.print.PrintService printer =
+            selector.selectConfiguredPrinter();
+        selector.requireAvailable(printer);
+
+        try (PDDocument document = PDDocument.load(pdfBytes)) {
+            if (document.isEncrypted()) {
+                throw new IllegalArgumentException(
+                    "Encrypted PDF cannot be printed");
+            }
+
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setPrintService(printer);
+            job.setJobName(attributes.jobName());
+            job.setPageable(new PDFPageable(document));
+
+            PrintRequestAttributeSet request =
+                attributes.forPrinter(printer);
+
+            LOGGER.info(
+                "Submitting print job: printer={}, pages={}, attributes={}",
+                printer.getName(), document.getNumberOfPages(), request);
+
+            job.print(request);
+
+            LOGGER.info(
+                "Print job returned from spooler submission: printer={}",
+                printer.getName());
+        }
+    }
+}
+</code></pre>
 <p>The <code>PDDocument</code> must stay open until <code>job.print()</code> returns because <code>PDFPageable</code> reads and renders pages during that call. Closing it immediately after <code>setPageable()</code> causes failures during printing.</p>
 <h3>Pageable printing versus raw PDF submission</h3>
 <p>Two Java printing approaches are easy to confuse:</p>
@@ -838,33 +865,34 @@ public class PrinterService {<br />
 <p>Do not use <code>AUTOSENSE</code> as evidence that arbitrary DOCX, HTML, or RTF bytes will print correctly. It delegates interpretation to the driver, and behavior varies across environments.</p>
 <h3>Optional job events for a native DocPrintJob path</h3>
 <p><code>DocPrintJob</code> supports a <code>PrintJobListener</code>:</p>
-<pre><code class="language-java">DocPrintJob job = printer.createPrintJob();<br />
-job.addPrintJobListener(new PrintJobAdapter() {<br />
-    @Override<br />
-    public void printDataTransferCompleted(PrintJobEvent event) {<br />
-        LOGGER.info("Print data transferred to the spooler");<br />
-    }<br />
-<br />
-    @Override<br />
-    public void printJobCompleted(PrintJobEvent event) {<br />
-        LOGGER.info("Print subsystem reported job completion");<br />
-    }<br />
-<br />
-    @Override<br />
-    public void printJobFailed(PrintJobEvent event) {<br />
-        LOGGER.error("Print subsystem reported job failure");<br />
-    }<br />
-<br />
-    @Override<br />
-    public void printJobCanceled(PrintJobEvent event) {<br />
-        LOGGER.warn("Print job was canceled");<br />
-    }<br />
-<br />
-    @Override<br />
-    public void printJobRequiresAttention(PrintJobEvent event) {<br />
-        LOGGER.warn("Print job requires operator attention");<br />
-    }<br />
-});</code></pre>
+<pre><code class="language-java">DocPrintJob job = printer.createPrintJob();
+job.addPrintJobListener(new PrintJobAdapter() {
+    @Override
+    public void printDataTransferCompleted(PrintJobEvent event) {
+        LOGGER.info("Print data transferred to the spooler");
+    }
+
+    @Override
+    public void printJobCompleted(PrintJobEvent event) {
+        LOGGER.info("Print subsystem reported job completion");
+    }
+
+    @Override
+    public void printJobFailed(PrintJobEvent event) {
+        LOGGER.error("Print subsystem reported job failure");
+    }
+
+    @Override
+    public void printJobCanceled(PrintJobEvent event) {
+        LOGGER.warn("Print job was canceled");
+    }
+
+    @Override
+    public void printJobRequiresAttention(PrintJobEvent event) {
+        LOGGER.warn("Print job requires operator attention");
+    }
+});
+</code></pre>
 <p>These callbacks describe what the print subsystem reports. Driver behavior is inconsistent, and “completed” may still mean the queue finished processing rather than a human collected a physical page.</p>
 <h3>Define job states honestly</h3>
 <p><code>PrinterJob.print()</code> returning without an exception usually means the driver or spooler accepted the rendered job. It does <strong>not</strong> prove:</p>
@@ -876,9 +904,10 @@ job.addPrintJobListener(new PrintJobAdapter() {<br />
 <li>a user collected a secure-release job.</li>
 </ul>
 <p>Use states that reflect observable facts:</p>
-<pre><code class="language-text">RECEIVED -&gt; VALIDATING -&gt; CONVERTING -&gt; READY_TO_PRINT<br />
-         -&gt; SUBMITTING -&gt; SUBMITTED_TO_SPOOLER<br />
-         -&gt; FAILED_VALIDATION | FAILED_CONVERSION | FAILED_SUBMISSION</code></pre>
+<pre><code class="language-text">RECEIVED -&gt; VALIDATING -&gt; CONVERTING -&gt; READY_TO_PRINT
+         -&gt; SUBMITTING -&gt; SUBMITTED_TO_SPOOLER
+         -&gt; FAILED_VALIDATION | FAILED_CONVERSION | FAILED_SUBMISSION
+</code></pre>
 <p>Only introduce <code>PRINTED</code> when the printer platform supplies a trustworthy device-level completion signal. Store the normalized error category and correlation ID, but return a safe message to the API caller.</p>
 <h3>Prevent duplicate physical output</h3>
 <p>Retries are dangerous after spooler submission. If the application times out after the queue accepted the job, submitting again may print a duplicate. Use an idempotency key before conversion, persist state transitions transactionally, and make operators reconcile an ambiguous submission instead of automatically retrying it.</p>
