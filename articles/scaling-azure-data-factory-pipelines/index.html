@@ -4,22 +4,22 @@
 <title>Scaling Azure Data Factory Pipelines</title>
 <meta name="description" content="Azure Data Factory pipelines often begin as small integrations and gradually become business-critical data platforms. A scalable design needs consistent orchestration, bounded concurrency, reliable...">
 <meta name="author" content="Suresh Kumar Mani">
-<meta name="publication-request-id" content="768f2fe5-6250-4d4b-ace0-e18e09d8aef2">
+<meta name="publication-request-id" content="d8074c7d-e361-440a-a592-9e4e15de54a0">
 <link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Scaling Azure Data Factory Pipelines">
 <meta property="og:description" content="Azure Data Factory pipelines often begin as small integrations and gradually become business-critical data platforms. A scalable design needs consistent orchestration, bounded concurrency, reliable...">
 <meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/">
-<meta property="article:published_time" content="2026-07-31T04:46:27.697Z">
-<meta property="article:modified_time" content="2026-07-31T04:46:27.697Z">
+<meta property="article:published_time" content="2026-07-31T05:11:25.515Z">
+<meta property="article:modified_time" content="2026-07-31T05:11:25.515Z">
 <meta property="article:author" content="Suresh Kumar Mani">
 <meta property="article:tag" content="Azure">
 <meta property="article:tag" content="Data Engineering">
 <meta property="article:tag" content="Architecture">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Scaling Azure Data Factory Pipelines","description":"Azure Data Factory pipelines often begin as small integrations and gradually become business-critical data platforms. A scalable design needs consistent orchestration, bounded concurrency, reliable...","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-07-31T04:46:27.697Z","dateModified":"2026-07-31T04:46:27.697Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/","url":"https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/","keywords":"Azure, Data Engineering, Architecture"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Scaling Azure Data Factory Pipelines","description":"Azure Data Factory pipelines often begin as small integrations and gradually become business-critical data platforms. A scalable design needs consistent orchestration, bounded concurrency, reliable...","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-07-31T05:11:25.515Z","dateModified":"2026-07-31T05:11:25.515Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/","url":"https://manisuresh84.github.io/medium-source/articles/scaling-azure-data-factory-pipelines/","keywords":"Azure, Data Engineering, Architecture"}</script>
 <style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.65 system-ui;color:#202124}img{max-width:100%}code,pre{background:#f5f5f5}pre{padding:16px;overflow:auto}</style>
 </head><body><main><article itemscope itemtype="https://schema.org/Article">
-<header><h1 itemprop="headline">Scaling Azure Data Factory Pipelines</h1><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-07-31T04:46:27.697Z">2026-07-31</time></header>
+<header><h1 itemprop="headline">Scaling Azure Data Factory Pipelines</h1><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-07-31T05:11:25.515Z">2026-07-31</time></header>
 <div itemprop="articleBody"><p>Azure Data Factory pipelines often begin as small integrations and gradually become business-critical data platforms. A scalable design needs consistent orchestration, bounded concurrency, reliable retries, and enough telemetry to explain what happened.</p>
 <h2>Separate orchestration from data movement</h2>
 <p>The orchestration layer decides which workload should run, validates its configuration, applies concurrency limits, and records its state. Worker pipelines focus on one well-defined unit of data.</p>
