@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en" prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service</title>
+<meta name="description" content="Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...">
+<meta name="author" content="Suresh Kumar Mani">
+<meta name="publication-request-id" content="5d670654-8e58-4094-9fd9-d1b62b15a1c1">
+<link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service">
+<meta property="og:description" content="Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...">
+<meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/">
+<meta property="og:image" content="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png">
+<meta property="article:published_time" content="2026-07-31T17:21:53.652Z">
+<meta property="article:modified_time" content="2026-07-31T17:21:53.652Z">
+<meta property="article:author" content="Suresh Kumar Mani">
+<meta property="article:tag" content="Spring Boot">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="PDFBox">
+<meta property="article:tag" content="Printing">
+<meta property="article:tag" content="Backend Development">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service","description":"Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer,...","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-07-31T17:21:53.652Z","dateModified":"2026-07-31T17:21:53.652Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","url":"https://manisuresh84.github.io/medium-source/articles/build-a-secure-document-printing-api-with-spring-boot-pdfbox-and-java-print-service/","keywords":"Spring Boot, Java, PDFBox, Printing, Backend Development","image":"https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+</head><body><main><article itemscope itemtype="https://schema.org/Article">
+<header><h1 itemprop="headline">Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service</h1><p class="subtitle">A practical server-side pipeline for securely converting and printing PDF, Word, text, RTF, and HTML documents</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-07-31T17:21:53.652Z">2026-07-31</time></header>
+<figure><img src="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png" alt="Build a Secure Document Printing API with Spring Boot, PDFBox, and Java Print Service"></figure>
+<div itemprop="articleBody"><p>Printing from a web application sounds simple until the requirements become real. The application must accept several formats, reject unsafe uploads, preserve layout, locate a server-side printer, apply print settings, and report failures without exposing confidential data.</p>
+<p>This tutorial builds that pipeline with <strong>Spring Boot 3</strong>, <strong>Java 21</strong>, <strong>Apache PDFBox</strong>, and the Java Print Service API. The guiding principle is straightforward: <em>convert every supported document to PDF, then maintain one dependable printing path</em>.</p>
+<blockquote>
+<p>This is server-side printing. The job goes to a printer installed for the operating-system account running the Spring application. It does not open the browser print dialog or automatically reach a printer connected only to the user's laptop.</p>
+</blockquote>
+<h2>Architecture overview</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-secure-multi-format-printing-architecture.png" alt="Secure multi-format printing architecture" title="Secure Multi-Format Printing Architecture" /></p>
+<p>The architecture deliberately separates five responsibilities: accepting the request, validating and routing the document, converting it into a common PDF representation, controlling printer selection and capabilities, and handing the final job to the operating-system printing stack.</p>
+<p>The left side is the untrusted boundary. An authenticated client submits <code>multipart/form-data</code> to <code>POST /print</code>. <code>PrintController</code> enforces authorization and rejects invalid filenames, excessive size, disallowed extensions, and path-traversal patterns before a document parser sees the bytes.</p>
+<p><code>DocumentType</code> then routes the validated upload into a format-specific conversion lane:</p>
+<ul>
+<li>existing PDF files are loaded and structurally validated;</li>
+<li>DOC and DOCX files are rendered by a Word-compatible layout engine;</li>
+<li>RTF is processed by an RTF-aware layout renderer;</li>
+<li>HTML and XHTML are sanitized before XHTML-to-PDF rendering;</li>
+<li>TXT receives an explicit font, line wrapping, margins, and pagination through PDFBox.</li>
+</ul>
+<p>Every lane converges on the same contract: a readable, non-encrypted PDF with a valid <code>%PDF-</code> signature and an allowed page count. This is the most important architectural decision in the application. It prevents format-specific logic from leaking into printer discovery and job submission.</p>
+<p>After normalization, <code>PrinterSelector</code> finds only the configured, allowlisted queue and checks whether it is accepting work. Capability negotiation compares requested options—paper size, copies, color, quality, orientation, duplex, and page range—with what that queue reports.</p>
+<p>Finally, PDFBox exposes the validated document as <code>PDFPageable</code>, Java <code>PrinterJob</code> sends the rendered pages to the operating-system spooler, and Windows or CUPS hands the job to the installed driver and physical or virtual printer.</p>
+<blockquote>
+<p>The application can truthfully report <code>SUBMITTED_TO_SPOOLER</code> after successful submission. It should not claim <code>PRINTED</code> unless the printer platform provides a trustworthy device-level completion signal.</p>
+</blockquote>
+<h2>What we are building</h2>
+<p>The application exposes <code>POST /print</code> and accepts a multipart file. The authenticated caller must have the <code>USER</code> role. The service validates the upload, converts non-PDF formats, finds the configured printer, builds supported printer attributes, and renders the PDF through PDFBox.</p>
+<p>The processing stages are:</p>
+<ol>
+<li>Authenticate and authorize the request.</li>
+<li>Validate the uploaded filename, size, extension, and content.</li>
+<li>Convert DOC, DOCX, TXT, RTF, HTML, or XHTML to PDF.</li>
+<li>Discover an approved operating-system printer.</li>
+<li>Negotiate paper, color, copies, orientation, duplex, and page-range settings.</li>
+<li>Submit the job and return a durable job identifier.</li>
+</ol>
+<p>The resulting architecture is intentionally layered:</p>
+<pre><code class="language-text">Multipart HTTP request
+        |
+        v
+PrintController -- authentication and boundary validation
+        |
+        v
+PrintService ---- orchestration and file-type detection
+        |
+        +--&gt; FileToPdfConverter -- input normalization
+        |
+        v
+PrinterService -- printer discovery and PDFBox rendering
+        |
+        v
+Operating-system spooler
+</code></pre>
+<h2>Step 1: Add the required dependencies</h2>
+<p>Use Java 21 and a compatible Gradle runtime. The application needs Spring MVC, Spring Security, validation, PDFBox, and the conversion libraries approved by your organization.</p>
+<pre><code class="language-groovy">plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.29'
+    implementation 'org.jsoup:jsoup:1.18.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+</code></pre>
+<p>Word and HTML conversion libraries have licensing and security implications. Review their licenses and supported versions before shipping. Keep conversion behind an interface so Aspose.Words, LibreOffice headless, docx4j, or another converter can be substituted later.</p>
+<p>Useful references include the <a href="https://docs.spring.io/spring-boot/index.html">Spring Boot documentation</a> and the <a href="https://pdfbox.apache.org/">Apache PDFBox documentation</a>.</p>
+<h2>Step 2: Externalize printer configuration</h2>
+<p>Printer names and job options belong in configuration rather than controller code:</p>
+<pre><code class="language-properties">spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+
+app.admin.username=${ADMIN_USERNAME:admin}
+app.admin.password=${ADMIN_PASSWORD}
+
+printer.name=Default_Printer
+printer.copies=1
+printer.chromaticity=COLOR
+printer.printquality=HIGH
+printer.mediasize=ISO_A4
+printer.jobname=Document_Print_Job
+printer.orientation=PORTRAIT
+printer.duplex=ONE_SIDED
+printer.pagerange=1-10
+</code></pre>
+<p>Never store a real production password in source control. <del>A convenient default password is harmless in a demo.</del> A published default often survives into a deployed environment, so require a secret at startup.</p>
+<h2>Step 3: Secure the API</h2>
+<p>For a machine-to-machine service, stateless HTTP Basic authentication is a compact demonstration:</p>
+<pre><code class="language-java">@Bean
+SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers("/error").permitAll()
+            .requestMatchers("/print/**").hasRole("USER")
+            .anyRequest().authenticated())
+        .httpBasic(basic -&gt; basic.realmName("Print Service"))
+        .csrf(csrf -&gt; csrf.ignoringRequestMatchers("/print/**"))
+        .sessionManagement(session -&gt; session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .build();
+}
+</code></pre>
+<p>CSRF policy must match the authentication model. A stateless Basic-auth endpoint can be exempt, while a browser session authenticated by cookies generally needs CSRF protection. Encode the selected policy in tests so configuration and expectations cannot drift apart.</p>
+<h3>Security work before production</h3>
+<ul>
+<li><input checked disabled type="checkbox" /> Require authentication and the <code>USER</code> role.</li>
+<li><input checked disabled type="checkbox" /> Limit multipart requests to 10 MB.</li>
+<li><input checked disabled type="checkbox" /> Reject path separators and traversal sequences in filenames.</li>
+<li><input disabled type="checkbox" /> Integrate enterprise identity and per-printer authorization.</li>
+<li><input disabled type="checkbox" /> Scan uploads for malware.</li>
+<li><input disabled type="checkbox" /> Enforce page-count, memory, conversion-time, and concurrency limits.</li>
+<li><input disabled type="checkbox" /> Add secure-release printing for confidential documents.</li>
+</ul>
+<h2>Step 4: Validate uploads at the boundary</h2>
+<p>Extension allowlisting is the first layer, not the entire defense:</p>
+<pre><code class="language-java">private static final Set&lt;String&gt; ALLOWED_TYPES =
+    Set.of("pdf", "doc", "docx", "txt", "rtf", "html", "xhtml");
+
+private void validateFile(MultipartFile file) {
+    if (file == null || file.isEmpty()) {
+        throw new SecurityException("File is null or empty");
+    }
+
+    String name = file.getOriginalFilename();
+    if (name == null || name.isBlank()) {
+        throw new SecurityException("File name is missing");
+    }
+
+    if (name.contains("..") || name.contains("/") || name.contains("\\")) {
+        throw new SecurityException("Illegal filename");
+    }
+
+    if (file.getSize() &gt; 10L * 1024 * 1024) {
+        throw new SecurityException("File exceeds 10 MB");
+    }
+}
+</code></pre>
+<p>Production validation should inspect magic bytes, parse with bounded resources, remove active HTML content, and block remote resource loading. Never write an upload using the caller-supplied filename.</p>
+<h2>Step 5: Keep the controller thin</h2>
+<p>The controller validates the request and delegates the printing work:</p>
+<pre><code class="language-java">@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+@PreAuthorize("hasRole('USER')")
+public ResponseEntity&lt;String&gt; printDocument(
+        @RequestParam("file") MultipartFile file,
+        Principal principal) throws Exception {
+
+    validateFile(file);
+    printService.printDocument(file.getOriginalFilename(), file.getBytes());
+    return ResponseEntity.accepted().body("Print job accepted");
+}
+</code></pre>
+<p><code>202 Accepted</code> means the service accepted the work. It does <strong>not</strong> prove that paper emerged from the device. A production API should return a job ID and provide a status resource such as <code>GET /print/jobs/{id}</code>.</p>
+<h2>Step 6: Normalize every format to PDF</h2>
+<p>The printer should receive one predictable representation regardless of what the caller uploaded. PDF is a useful normalization format because it fixes page geometry, fonts, images, and pagination before the operating-system printer driver becomes involved.</p>
+<p>Create one converter component with a small public method. Keep the format-specific methods private so callers cannot accidentally bypass common validation.</p>
+<pre><code class="language-java">@Component
+public class FileToPdfConverter {
+    private static final int MAX_PAGES = 250;
+
+    public byte[] convert(byte[] input, DocumentType type) throws IOException {
+        if (input == null || input.length == 0) {
+            throw new IllegalArgumentException("Document content is empty");
+        }
+
+        byte[] pdf = switch (type) {
+            case PDF -&gt; validateAndCopyPdf(input);
+            case DOC, DOCX -&gt; convertWord(input);
+            case RTF -&gt; convertRtf(input);
+            case HTML, XHTML -&gt; convertHtml(input);
+            case TXT -&gt; convertText(input);
+        };
+
+        validateGeneratedPdf(pdf);
+        return pdf;
+    }
+}
+</code></pre>
+<p>Use an enum rather than passing arbitrary strings throughout the service:</p>
+<pre><code class="language-java">public enum DocumentType {
+    PDF, DOC, DOCX, TXT, RTF, HTML, XHTML;
+
+    public static DocumentType fromFilename(String filename) {
+        if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("Filename is required");
+        }
+
+        int dot = filename.lastIndexOf('.');
+        if (dot &lt; 0 || dot == filename.length() - 1) {
+            throw new IllegalArgumentException("Filename has no extension");
+        }
+
+        String extension = filename.substring(dot + 1).toUpperCase(Locale.ROOT);
+        try {
+            return DocumentType.valueOf(extension);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(
+                "Unsupported document extension: " + extension, exception);
+        }
+    }
+}
+</code></pre>
+<p>Extension detection controls routing, but it does not establish trust. Verify the content signature as well. For example, PDF begins with <code>%PDF-</code>, legacy DOC usually uses the OLE compound-document signature, DOCX is a ZIP package with required Word entries, and RTF begins with <code>{\\rtf</code>. Let the selected parser reject structurally invalid content.</p>
+<h3>Convert existing PDF files</h3>
+<p>Do not blindly return uploaded PDF bytes. Load the document to verify structure, reject encryption when the service does not support passwords, enforce a page limit, and save a clean copy.</p>
+<pre><code class="language-java">private byte[] validateAndCopyPdf(byte[] input) throws IOException {
+    try (PDDocument document = PDDocument.load(input)) {
+        if (document.isEncrypted()) {
+            throw new IllegalArgumentException("Encrypted PDFs are not supported");
+        }
+        if (document.getNumberOfPages() == 0) {
+            throw new IllegalArgumentException("PDF contains no pages");
+        }
+        if (document.getNumberOfPages() &gt; MAX_PAGES) {
+            throw new IllegalArgumentException("PDF exceeds the page limit");
+        }
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        document.save(output);
+        return output.toByteArray();
+    }
+}
+</code></pre>
+<p>Loading a PDF is structural validation, not malware scanning. Run untrusted documents through an approved scanner and keep PDFBox patched.</p>
+<h3>Convert DOC and DOCX files</h3>
+<p>DOC is the older binary Word format; DOCX is an Open Packaging Convention ZIP containing XML parts. Apache POI is excellent for reading and editing Office documents, but it is not a complete layout engine. Accurate printing requires a renderer that understands fonts, headers, tables, floating images, sections, and Word pagination.</p>
+<p>The inspected project uses Aspose.Words. Load the license once during application startup, then create a new <code>Document</code> for every conversion:</p>
+<pre><code class="language-java">@Component
+public class WordConverter {
+    private final com.aspose.words.License license;
+
+    public WordConverter(ResourceLoader resources) throws Exception {
+        this.license = new com.aspose.words.License();
+        Resource resource = resources.getResource("classpath:license.xml");
+        try (InputStream stream = resource.getInputStream()) {
+            license.setLicense(stream);
+        }
+    }
+
+    public byte[] convert(byte[] input) throws IOException {
+        try (InputStream source = new ByteArrayInputStream(input);
+             ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+
+            com.aspose.words.Document wordDocument =
+                new com.aspose.words.Document(source);
+
+            // Update fields such as page numbers and table of contents.
+            wordDocument.updateFields();
+            wordDocument.save(target, com.aspose.words.SaveFormat.PDF);
+            return target.toByteArray();
+        } catch (Exception exception) {
+            throw new IOException("Word-to-PDF conversion failed", exception);
+        }
+    }
+}
+</code></pre>
+<p>Delegate from the main converter:</p>
+<pre><code class="language-java">private final WordConverter wordConverter;
+
+private byte[] convertWord(byte[] input) throws IOException {
+    return wordConverter.convert(input);
+}
+</code></pre>
+<p>Fonts used by the source document must exist in the conversion environment or be explicitly mapped. Test tables, page breaks, headers, footers, embedded images, equations, and non-Latin text. If commercial licensing is unsuitable, a common alternative is an isolated LibreOffice headless worker. Do not start a new LibreOffice process for every HTTP request; use a bounded worker pool and timeouts.</p>
+<h3>Convert RTF files</h3>
+<p>RTF contains formatting instructions, fonts, colors, tables, and embedded objects. Converting it by reading it into Swing and writing it back does not reliably produce HTML; <code>RTFEditorKit.write</code> writes RTF syntax, not an HTML rendition.</p>
+<p>Aspose.Words can auto-detect and render RTF directly, which preserves more layout and removes the unreliable RTF-to-HTML intermediate step:</p>
+<pre><code class="language-java">private byte[] convertRtf(byte[] input) throws IOException {
+    try (InputStream source = new ByteArrayInputStream(input);
+         ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+
+        LoadOptions options = new LoadOptions();
+        options.setLoadFormat(LoadFormat.RTF);
+
+        com.aspose.words.Document rtfDocument =
+            new com.aspose.words.Document(source, options);
+        rtfDocument.save(target, SaveFormat.PDF);
+        return target.toByteArray();
+    } catch (Exception exception) {
+        throw new IOException("RTF-to-PDF conversion failed", exception);
+    }
+}
+</code></pre>
+<p>If using LibreOffice instead, write the RTF to a private temporary directory, invoke the converter with a strict timeout, validate the resulting PDF, and securely remove both files afterward.</p>
+<h3>Convert HTML and XHTML files</h3>
+<p>HTML conversion has two independent concerns: <strong>security</strong> and <strong>layout</strong>. Jsoup can sanitize markup, while iText XML Worker can render a limited XHTML/CSS subset. Sanitizing and rendering are not the same operation.</p>
+<p>First decode UTF-8 and remove active or remote content with an explicit allowlist:</p>
+<pre><code class="language-java">private String sanitizeHtml(byte[] input) {
+    String html = new String(input, StandardCharsets.UTF_8);
+    if (html.isBlank()) {
+        throw new IllegalArgumentException("HTML document is blank");
+    }
+
+    Safelist allowed = Safelist.relaxed()
+        .addTags("table", "thead", "tbody", "tfoot", "tr", "th", "td")
+        .addAttributes(":all", "class")
+        .addAttributes("td", "colspan", "rowspan")
+        .addAttributes("th", "colspan", "rowspan")
+        .addProtocols("a", "href", "https");
+
+    Document.OutputSettings outputSettings = new Document.OutputSettings()
+        .syntax(Document.OutputSettings.Syntax.xml)
+        .charset(StandardCharsets.UTF_8)
+        .prettyPrint(false);
+
+    return Jsoup.clean(html, "", allowed, outputSettings);
+}
+</code></pre>
+<p>This example deliberately excludes scripts, iframes, forms, styles, local-file URLs, and remote images. If images are required, download them through a controlled fetcher that blocks private networks, applies byte and time limits, verifies image content, and supplies local bytes to the renderer. Allowing the renderer to fetch arbitrary URLs creates a server-side request forgery risk.</p>
+<p>Next render sanitized XHTML:</p>
+<pre><code class="language-java">private byte[] convertHtml(byte[] input) throws IOException {
+    String xhtml = sanitizeHtml(input);
+
+    try (ByteArrayOutputStream target = new ByteArrayOutputStream()) {
+        com.itextpdf.text.Document pdf = new com.itextpdf.text.Document(
+            com.itextpdf.text.PageSize.A4, 45, 45, 50, 50);
+        PdfWriter writer = PdfWriter.getInstance(pdf, target);
+        pdf.open();
+
+        try (InputStream markup = new ByteArrayInputStream(
+                xhtml.getBytes(StandardCharsets.UTF_8))) {
+            XMLWorkerHelper.getInstance().parseXHtml(
+                writer,
+                pdf,
+                markup,
+                StandardCharsets.UTF_8,
+                new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS));
+        }
+
+        pdf.close();
+        return target.toByteArray();
+    } catch (Exception exception) {
+        throw new IOException("HTML-to-PDF conversion failed", exception);
+    }
+}
+</code></pre>
+<p>XML Worker and iText 5 are older technologies with licensing constraints and limited modern CSS support. For complex HTML, consider a maintained renderer or a sandboxed browser-based PDF worker. Whichever engine you choose, pin versions, disable uncontrolled network access, and test the exact CSS subset you promise.</p>
+<h3>Convert plain-text files</h3>
+<p>Plain text has no page model. The converter must choose paper size, margins, font, font size, line spacing, wrapping, and pagination. The following PDFBox 2.x implementation embeds a Unicode TrueType font from <code>src/main/resources/fonts/NotoSans-Regular.ttf</code>.</p>
+<pre><code class="language-java">private byte[] convertText(byte[] input) throws IOException {
+    String text = new String(input, StandardCharsets.UTF_8)
+        .replace("\r\n", "\n")
+        .replace('\r', '\n');
+
+    try (PDDocument document = new PDDocument();
+         InputStream fontStream = getClass().getResourceAsStream(
+             "/fonts/NotoSans-Regular.ttf")) {
+
+        if (fontStream == null) {
+            throw new IllegalStateException("Unicode font resource is missing");
+        }
+
+        PDType0Font font = PDType0Font.load(document, fontStream, true);
+        PDRectangle pageSize = PDRectangle.A4;
+        float margin = 50f;
+        float fontSize = 11f;
+        float leading = 15f;
+        float usableWidth = pageSize.getWidth() - (2 * margin);
+
+        List&lt;String&gt; visualLines = new ArrayList&lt;&gt;();
+        for (String logicalLine : text.split("\n", -1)) {
+            visualLines.addAll(wrapLine(logicalLine, font, fontSize, usableWidth));
+        }
+
+        PDPageContentStream stream = null;
+        float y = 0;
+        try {
+            for (String line : visualLines) {
+                if (stream == null || y &lt; margin + leading) {
+                    if (stream != null) {
+                        stream.endText();
+                        stream.close();
+                    }
+
+                    if (document.getNumberOfPages() &gt;= MAX_PAGES) {
+                        throw new IllegalArgumentException("Text exceeds page limit");
+                    }
+
+                    PDPage page = new PDPage(pageSize);
+                    document.addPage(page);
+                    stream = new PDPageContentStream(document, page);
+                    stream.beginText();
+                    stream.setFont(font, fontSize);
+                    y = pageSize.getHeight() - margin;
+                    stream.newLineAtOffset(margin, y);
+                }
+
+                stream.showText(line);
+                stream.newLineAtOffset(0, -leading);
+                y -= leading;
+            }
+        } finally {
+            if (stream != null) {
+                stream.endText();
+                stream.close();
+            }
+        }
+
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        document.save(target);
+        return target.toByteArray();
+    }
+}
+</code></pre>
+<p>Wrap each logical line by measuring rendered glyph width rather than counting characters:</p>
+<pre><code class="language-java">private List&lt;String&gt; wrapLine(
+        String line,
+        PDFont font,
+        float fontSize,
+        float maximumWidth) throws IOException {
+
+    if (line.isEmpty()) return List.of(" ");
+
+    List&lt;String&gt; result = new ArrayList&lt;&gt;();
+    StringBuilder current = new StringBuilder();
+
+    for (String word : line.split("\\s+")) {
+        String candidate = current.isEmpty() ? word : current + " " + word;
+        float width = font.getStringWidth(candidate) / 1000f * fontSize;
+
+        if (width &lt;= maximumWidth) {
+            current.setLength(0);
+            current.append(candidate);
+        } else {
+            if (!current.isEmpty()) result.add(current.toString());
+            current.setLength(0);
+            current.append(word);
+        }
+    }
+
+    if (!current.isEmpty()) result.add(current.toString());
+    return result;
+}
+</code></pre>
+<p>For production, also split a single word that is wider than the page, replace unsupported control characters, detect malformed UTF-8 rather than silently replacing it, and use PDFBox's newer APIs if upgrading to PDFBox 3.</p>
+<h3>Validate every generated PDF</h3>
+<p>Every format-specific method ends at the same postcondition: a readable, non-empty, bounded PDF.</p>
+<pre><code class="language-java">private void validateGeneratedPdf(byte[] pdf) throws IOException {
+    if (pdf == null || pdf.length &lt; 5 ||
+            pdf[0] != '%' || pdf[1] != 'P' ||
+            pdf[2] != 'D' || pdf[3] != 'F' || pdf[4] != '-') {
+        throw new IOException("Converter did not produce a PDF document");
+    }
+
+    try (PDDocument document = PDDocument.load(pdf)) {
+        int pages = document.getNumberOfPages();
+        if (pages &lt; 1 || pages &gt; MAX_PAGES) {
+            throw new IOException("Generated PDF page count is outside limits");
+        }
+    }
+}
+</code></pre>
+<h3>Wire conversion into the print service</h3>
+<p>The orchestration layer now has no format-specific printing branches:</p>
+<pre><code class="language-java">@Service
+public class PrintService {
+    private final FileToPdfConverter converter;
+    private final PrinterService printerService;
+
+    public void printDocument(String filename, byte[] content) throws Exception {
+        DocumentType type = DocumentType.fromFilename(filename);
+        byte[] pdf = converter.convert(content, type);
+
+        javax.print.PrintService printer = printerService.fetchPrintService();
+        printerService.printPdf(pdf, printer);
+    }
+}
+</code></pre>
+<p>That is the value of normalization: PDF, Word, RTF, HTML, XHTML, and TXT all converge before printer discovery and job submission.</p>
+<h2>Why convert every document to PDF before printing?</h2>
+<p>It may seem wasteful to convert a Word, RTF, HTML, or text document when the target printer might accept some of those formats. The conversion step is actually the architectural boundary that makes the printing service predictable.</p>
+<h3>Printers do not share one document language</h3>
+<p>Java Print Service exposes <code>DocFlavor</code> values reported by each installed driver. One printer may advertise PDF, another may accept only <code>PAGEABLE</code>, and another may claim <code>AUTOSENSE</code> while producing different results depending on its Windows or CUPS driver. Native DOCX and RTF support is especially uncommon because those formats require a full document-layout engine, not just a printer driver.</p>
+<p>If the application sends every original format directly, it needs a matrix of paths:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Possible native path</th>
+<th>Common problem</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PDF</td>
+<td>Driver PDF support</td>
+<td>Not consistently advertised</td>
+</tr>
+<tr>
+<td>DOC/DOCX</td>
+<td>Office automation</td>
+<td>Requires Word/Office and an interactive profile</td>
+</tr>
+<tr>
+<td>RTF</td>
+<td>Driver or desktop application</td>
+<td>Formatting varies by renderer</td>
+</tr>
+<tr>
+<td>HTML/XHTML</td>
+<td>Browser or HTML print service</td>
+<td>CSS, fonts, headers, and margins differ</td>
+</tr>
+<tr>
+<td>TXT</td>
+<td>Text flavor</td>
+<td>No standard wrapping, margins, or pagination</td>
+</tr>
+</tbody></table>
+<p>Five inputs multiplied by several printer models quickly becomes a large compatibility and test matrix. Normalization changes the model to <strong>many inputs → one PDF contract → one printing path</strong>.</p>
+<h3>PDF establishes a page model</h3>
+<p>Word and HTML are reflowable. Their final page breaks depend on fonts, available page width, margins, renderer behavior, and sometimes the default printer. Plain text has no page geometry at all. PDF fixes the important output decisions before submission:</p>
+<ul>
+<li>physical page size and orientation;</li>
+<li>font selection, embedding, and glyph positions;</li>
+<li>line wrapping and page breaks;</li>
+<li>image size and placement;</li>
+<li>headers, footers, tables, and vector graphics;</li>
+<li>the exact number and order of pages.</li>
+</ul>
+<p>The printer driver still rasterizes or translates those pages for the device, but it no longer decides how a DOCX paragraph or HTML table should flow.</p>
+<h3>One format creates one validation checkpoint</h3>
+<p>Every converter must return a PDF that can be reopened, has at least one page, stays under the page limit, and is not encrypted. That gives the service a measurable postcondition before it spends spooler resources. A failed HTML render and a corrupt Word document are reported as conversion failures rather than mysterious printer errors.</p>
+<h3>One format simplifies operations</h3>
+<p>PDF normalization also provides:</p>
+<ul>
+<li>one PDFBox rendering implementation;</li>
+<li>consistent page-range behavior;</li>
+<li>a previewable intermediate representation;</li>
+<li>repeatable conversion tests;</li>
+<li>clearer audit stages: <code>VALIDATED</code>, <code>CONVERTED</code>, <code>QUEUED</code>, and <code>SUBMITTED</code>;</li>
+<li>easier migration between Windows printing, CUPS, a cloud print API, or archival storage.</li>
+</ul>
+<p>There are tradeoffs. Conversion consumes CPU and memory, requires fonts and licensed renderers, and may not reproduce every advanced Word or CSS feature perfectly. Keep the original document only as long as policy requires, isolate converters, and compare representative documents against known-good output. The goal is not “PDF is universally perfect”; it is “PDF gives this service one controlled, testable page contract.”</p>
+<h2>Step 7: Discover an approved printer</h2>
+<p>Java Print Service represents an operating-system print queue through <code>javax.print.PrintService</code>. Discovery returns queues visible to the identity running the JVM—not necessarily the printers visible to the developer's interactive desktop.</p>
+<p>Wrap the static lookup API so the rest of the application can be unit-tested:</p>
+<pre><code class="language-java">public interface PrinterRegistry {
+    List&lt;javax.print.PrintService&gt; availablePrinters();
+}
+
+@Component
+public class JavaPrinterRegistry implements PrinterRegistry {
+    @Override
+    public List&lt;javax.print.PrintService&gt; availablePrinters() {
+        return List.of(PrintServiceLookup.lookupPrintServices(null, null));
+    }
+}
+</code></pre>
+<p>Select only a configured printer. Do not accept an unrestricted printer name from an HTTP request because that lets callers enumerate or target any queue available to the service account.</p>
+<pre><code class="language-java">@Service
+public class PrinterSelector {
+    private final PrinterRegistry registry;
+    private final PrinterProperties properties;
+
+    public javax.print.PrintService selectConfiguredPrinter() {
+        String requested = properties.getName().trim();
+
+        return registry.availablePrinters().stream()
+            .filter(printer -&gt; printer.getName().equalsIgnoreCase(requested))
+            .findFirst()
+            .orElseThrow(() -&gt; new PrinterUnavailableException(
+                "Configured printer is not installed or visible: " + requested));
+    }
+
+    public List&lt;String&gt; visiblePrinterNamesForDiagnostics() {
+        return registry.availablePrinters().stream()
+            .map(javax.print.PrintService::getName)
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
+    }
+}
+</code></pre>
+<p>Expose printer names only through an administrator-only diagnostic endpoint, and consider printer names sensitive infrastructure information.</p>
+<h3>Check queue state before submitting</h3>
+<p>A discovered queue may be stopped or rejecting new work. Inspect the standard attributes when the driver provides them:</p>
+<pre><code class="language-java">public void requireAvailable(javax.print.PrintService printer) {
+    PrinterIsAcceptingJobs accepting =
+        printer.getAttribute(PrinterIsAcceptingJobs.class);
+    PrinterState state = printer.getAttribute(PrinterState.class);
+    QueuedJobCount queued = printer.getAttribute(QueuedJobCount.class);
+
+    if (PrinterIsAcceptingJobs.NOT_ACCEPTING_JOBS.equals(accepting)) {
+        throw new PrinterUnavailableException(
+            "Printer is not accepting jobs: " + printer.getName());
+    }
+
+    if (PrinterState.STOPPED.equals(state)) {
+        throw new PrinterUnavailableException(
+            "Printer queue is stopped: " + printer.getName());
+    }
+
+    int queueDepth = queued == null ? -1 : queued.getValue();
+    LOGGER.info("Printer selected: name={}, state={}, queueDepth={}",
+        printer.getName(), state, queueDepth);
+}
+</code></pre>
+<p>Many drivers return <code>null</code> for attributes they cannot report. Treat unknown state separately from a known failure; do not interpret <code>null</code> as proof that the physical device is ready.</p>
+<p>Failing closed is safer than silently choosing the default printer. An unexpected fallback could place a confidential document in another department. If fallback is a business requirement, configure one explicit fallback queue, authorize it, and record the failover in the audit event.</p>
+<h3>Understand deployment identity</h3>
+<p>Printer discovery commonly fails after deployment because the service runs as a different account:</p>
+<ul>
+<li>a Windows service may not see printers installed only for a desktop user;</li>
+<li>a Linux service needs access to the CUPS server and queue;</li>
+<li>a container usually has no host print subsystem unless it is deliberately connected;</li>
+<li>network printers may require credentials, drivers, DNS, and firewall access.</li>
+</ul>
+<p>Run a startup health indicator under the real service identity. It should confirm that the configured queue is visible without actually printing a page.</p>
+<h2>Step 8: Map configuration to Java print attributes</h2>
+<p>Java Print Service expresses job options as typed <code>Attribute</code> objects. The application must translate every supported configuration value explicitly.</p>
+<pre><code class="language-java">@Component
+@ConfigurationProperties(prefix = "printer")
+public class PrinterProperties {
+    private String name;
+    private int copies = 1;
+    private String mediaSize = "ISO_A4";
+    private String chromaticity = "MONOCHROME";
+    private String printQuality = "NORMAL";
+    private String orientation = "PORTRAIT";
+    private String duplex = "ONE_SIDED";
+    private String pageRange = "";
+    private String jobName = "Document_Print_Job";
+
+    // Getters and setters omitted.
+}
+</code></pre>
+<p>Create candidates from configuration:</p>
+<pre><code class="language-java">private List&lt;Attribute&gt; requestedAttributes() {
+    List&lt;Attribute&gt; requested = new ArrayList&lt;&gt;();
+    requested.add(new Copies(properties.getCopies()));
+    requested.add(new JobName(
+        properties.getJobName(), Locale.getDefault()));
+    requested.add(parseMedia(properties.getMediaSize()));
+    requested.add(parseChromaticity(properties.getChromaticity()));
+    requested.add(parseQuality(properties.getPrintQuality()));
+    requested.add(parseOrientation(properties.getOrientation()));
+    requested.add(parseSides(properties.getDuplex()));
+
+    if (properties.getPageRange() != null &amp;&amp;
+            !properties.getPageRange().isBlank()) {
+        requested.add(new PageRanges(properties.getPageRange()));
+    }
+    return requested;
+}
+</code></pre>
+<p>Map strings with strict switches so a typo fails during validation rather than silently changing output:</p>
+<pre><code class="language-java">private MediaSizeName parseMedia(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "ISO_A4" -&gt; MediaSizeName.ISO_A4;
+        case "ISO_A5" -&gt; MediaSizeName.ISO_A5;
+        case "LETTER", "NA_LETTER" -&gt; MediaSizeName.NA_LETTER;
+        case "LEGAL", "NA_LEGAL" -&gt; MediaSizeName.NA_LEGAL;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported configured media size: " + value);
+    };
+}
+
+private Chromaticity parseChromaticity(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "COLOR" -&gt; Chromaticity.COLOR;
+        case "MONOCHROME" -&gt; Chromaticity.MONOCHROME;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported chromaticity: " + value);
+    };
+}
+
+private PrintQuality parseQuality(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "DRAFT", "LOW" -&gt; PrintQuality.DRAFT;
+        case "NORMAL" -&gt; PrintQuality.NORMAL;
+        case "HIGH" -&gt; PrintQuality.HIGH;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported print quality: " + value);
+    };
+}
+
+private OrientationRequested parseOrientation(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "PORTRAIT" -&gt; OrientationRequested.PORTRAIT;
+        case "LANDSCAPE" -&gt; OrientationRequested.LANDSCAPE;
+        case "REVERSE_LANDSCAPE" -&gt; OrientationRequested.REVERSE_LANDSCAPE;
+        case "REVERSE_PORTRAIT" -&gt; OrientationRequested.REVERSE_PORTRAIT;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported orientation: " + value);
+    };
+}
+
+private Sides parseSides(String value) {
+    return switch (value.toUpperCase(Locale.ROOT)) {
+        case "ONE_SIDED" -&gt; Sides.ONE_SIDED;
+        case "DUPLEX", "TWO_SIDED_LONG_EDGE" -&gt; Sides.DUPLEX;
+        case "TUMBLE", "TWO_SIDED_SHORT_EDGE" -&gt; Sides.TUMBLE;
+        default -&gt; throw new IllegalArgumentException(
+            "Unsupported duplex mode: " + value);
+    };
+}
+</code></pre>
+<p>Common mappings are:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Java print attribute</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Paper size</td>
+<td><code>MediaSizeName</code></td>
+<td><code>ISO_A4</code></td>
+</tr>
+<tr>
+<td>Copies</td>
+<td><code>Copies</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>Color</td>
+<td><code>Chromaticity</code></td>
+<td><code>COLOR</code></td>
+</tr>
+<tr>
+<td>Quality</td>
+<td><code>PrintQuality</code></td>
+<td><code>HIGH</code></td>
+</tr>
+<tr>
+<td>Orientation</td>
+<td><code>OrientationRequested</code></td>
+<td><code>PORTRAIT</code></td>
+</tr>
+<tr>
+<td>Duplex</td>
+<td><code>Sides</code></td>
+<td><code>DUPLEX</code></td>
+</tr>
+<tr>
+<td>Pages</td>
+<td><code>PageRanges</code></td>
+<td><code>1-10</code></td>
+</tr>
+</tbody></table>
+<h3>Negotiate capabilities with the selected queue</h3>
+<p>Configuration describes what the caller wants; the printer decides what it supports. Test every attribute against the selected queue and the <code>PAGEABLE</code> flavor used by PDFBox:</p>
+<pre><code class="language-java">private PrintRequestAttributeSet supportedAttributes(
+        javax.print.PrintService printer) {
+
+    DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PAGEABLE;
+    PrintRequestAttributeSet accepted =
+        new HashPrintRequestAttributeSet();
+
+    for (Attribute attribute : requestedAttributes()) {
+        boolean supported = printer.isAttributeValueSupported(
+            attribute, flavor, accepted);
+
+        if (supported) {
+            accepted.add(attribute);
+            continue;
+        }
+
+        if (attribute instanceof MediaSizeName ||
+            attribute instanceof Sides) {
+            throw new IllegalArgumentException(
+                "Printer does not support required option: " + attribute);
+        }
+
+        LOGGER.warn("Omitting unsupported print attribute: printer={}, value={}",
+            printer.getName(), attribute);
+    }
+    return accepted;
+}
+</code></pre>
+<p>The policy above treats paper size and duplex as mandatory and other options as optional. Adjust that rule for the business case. For legal documents, selecting the wrong media or one-sided output may be a hard failure.</p>
+<p>To help administrators diagnose a queue, enumerate supported categories and values:</p>
+<pre><code class="language-java">for (Class&lt;?&gt; category : printer.getSupportedAttributeCategories()) {
+    Object values = printer.getSupportedAttributeValues(
+        category, DocFlavor.SERVICE_FORMATTED.PAGEABLE, null);
+    LOGGER.debug("Printer capability: category={}, values={}",
+        category.getSimpleName(), values);
+}
+</code></pre>
+<p>Some capabilities are vendor-specific. Paper trays often appear as <code>MediaTray</code> values returned by the driver rather than portable string constants. Discover and map them by a controlled configuration identifier; do not assume <code>MANUAL_FEED</code> exists on every device.</p>
+<h2>Step 9: Render normalized PDF pages with PDFBox</h2>
+<p>PDFBox implements Java's <code>Pageable</code> contract. <code>PDFPageable</code> supplies each PDF page to <code>PrinterJob</code>, which delegates final rasterization and transport to the installed driver.</p>
+<pre><code class="language-java">@Service
+public class PrinterService {
+    private final PrinterSelector selector;
+    private final PrinterAttributeFactory attributes;
+
+    public void printPdf(byte[] pdfBytes) throws IOException, PrinterException {
+        javax.print.PrintService printer =
+            selector.selectConfiguredPrinter();
+        selector.requireAvailable(printer);
+
+        try (PDDocument document = PDDocument.load(pdfBytes)) {
+            if (document.isEncrypted()) {
+                throw new IllegalArgumentException(
+                    "Encrypted PDF cannot be printed");
+            }
+
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setPrintService(printer);
+            job.setJobName(attributes.jobName());
+            job.setPageable(new PDFPageable(document));
+
+            PrintRequestAttributeSet request =
+                attributes.forPrinter(printer);
+
+            LOGGER.info(
+                "Submitting print job: printer={}, pages={}, attributes={}",
+                printer.getName(), document.getNumberOfPages(), request);
+
+            job.print(request);
+
+            LOGGER.info(
+                "Print job returned from spooler submission: printer={}",
+                printer.getName());
+        }
+    }
+}
+</code></pre>
+<p>The <code>PDDocument</code> must stay open until <code>job.print()</code> returns because <code>PDFPageable</code> reads and renders pages during that call. Closing it immediately after <code>setPageable()</code> causes failures during printing.</p>
+<h3>Pageable printing versus raw PDF submission</h3>
+<p>Two Java printing approaches are easy to confuse:</p>
+<ol>
+<li><code>PrinterJob</code> plus <code>PDFPageable</code> renders the PDF through PDFBox and uses the service-formatted <code>PAGEABLE</code> flavor.</li>
+<li><code>DocPrintJob</code> plus <code>SimpleDoc</code> sends bytes using a flavor such as <code>DocFlavor.BYTE_ARRAY.PDF</code>.</li>
+</ol>
+<p>Raw submission is appropriate only when <code>printer.isDocFlavorSupported(DocFlavor.BYTE_ARRAY.PDF)</code> is true and the target device or queue reliably handles PDF. The PDFBox <code>PAGEABLE</code> path is more portable because the Java/AWT print pipeline supplies rendered pages.</p>
+<p>Do not use <code>AUTOSENSE</code> as evidence that arbitrary DOCX, HTML, or RTF bytes will print correctly. It delegates interpretation to the driver, and behavior varies across environments.</p>
+<h3>Optional job events for a native DocPrintJob path</h3>
+<p><code>DocPrintJob</code> supports a <code>PrintJobListener</code>:</p>
+<pre><code class="language-java">DocPrintJob job = printer.createPrintJob();
+job.addPrintJobListener(new PrintJobAdapter() {
+    @Override
+    public void printDataTransferCompleted(PrintJobEvent event) {
+        LOGGER.info("Print data transferred to the spooler");
+    }
+
+    @Override
+    public void printJobCompleted(PrintJobEvent event) {
+        LOGGER.info("Print subsystem reported job completion");
+    }
+
+    @Override
+    public void printJobFailed(PrintJobEvent event) {
+        LOGGER.error("Print subsystem reported job failure");
+    }
+
+    @Override
+    public void printJobCanceled(PrintJobEvent event) {
+        LOGGER.warn("Print job was canceled");
+    }
+
+    @Override
+    public void printJobRequiresAttention(PrintJobEvent event) {
+        LOGGER.warn("Print job requires operator attention");
+    }
+});
+</code></pre>
+<p>These callbacks describe what the print subsystem reports. Driver behavior is inconsistent, and “completed” may still mean the queue finished processing rather than a human collected a physical page.</p>
+<h3>Define job states honestly</h3>
+<p><code>PrinterJob.print()</code> returning without an exception usually means the driver or spooler accepted the rendered job. It does <strong>not</strong> prove:</p>
+<ul>
+<li>the printer had paper and toner;</li>
+<li>every page physically printed;</li>
+<li>the output was not canceled later;</li>
+<li>the document reached the intended tray;</li>
+<li>a user collected a secure-release job.</li>
+</ul>
+<p>Use states that reflect observable facts:</p>
+<pre><code class="language-text">RECEIVED -&gt; VALIDATING -&gt; CONVERTING -&gt; READY_TO_PRINT
+         -&gt; SUBMITTING -&gt; SUBMITTED_TO_SPOOLER
+         -&gt; FAILED_VALIDATION | FAILED_CONVERSION | FAILED_SUBMISSION
+</code></pre>
+<p>Only introduce <code>PRINTED</code> when the printer platform supplies a trustworthy device-level completion signal. Store the normalized error category and correlation ID, but return a safe message to the API caller.</p>
+<h3>Prevent duplicate physical output</h3>
+<p>Retries are dangerous after spooler submission. If the application times out after the queue accepted the job, submitting again may print a duplicate. Use an idempotency key before conversion, persist state transitions transactionally, and make operators reconcile an ambiguous submission instead of automatically retrying it.</p>
+<p>Transient conversion failures can often be retried safely because no physical side effect occurred. Submission failures need a more conservative policy based on whether the spooler assigned a job identifier or the call failed before transfer.</p>
+<h2>Step 10: Test without wasting paper</h2>
+<p>Use a virtual PDF printer or an isolated test queue. Mock the application printing service in controller tests, then verify:</p>
+<ul>
+<li>unauthenticated requests return <code>401</code>;</li>
+<li>callers without <code>USER</code> return <code>403</code>;</li>
+<li>valid uploads return <code>202</code>;</li>
+<li>malicious filenames and unsupported types return <code>400</code>;</li>
+<li>oversized multipart requests return <code>413</code>;</li>
+<li>internal exceptions return a stable response without stack traces.</li>
+</ul>
+<p>Converter tests can assert that output begins with <code>%PDF-</code>, load it with PDFBox, and verify page count. Wrap static printer discovery behind an adapter so unit tests never depend on printers installed on a developer workstation.</p>
+<hr />
+<h2>Production architecture</h2>
+<p>For high-volume printing, move conversion and spooler calls away from the HTTP thread:</p>
+<ol>
+<li>Validate and store the upload in protected temporary storage.</li>
+<li>Create a durable job record.</li>
+<li>Place the job on a bounded queue.</li>
+<li>Scan and convert it in an isolated worker.</li>
+<li>Submit it to an authorized printer.</li>
+<li>Update job state and audit information.</li>
+<li>Delete source and intermediate files according to retention policy.</li>
+</ol>
+<p>This model supplies backpressure, retries, visibility, and clear failure states. Record the authenticated user, job ID, document size, printer, requested options, timestamps, and outcome—but never log document contents.</p>
+<h2>Conclusion</h2>
+<p>A dependable printing API is a controlled document-processing pipeline. Validate untrusted input, normalize it to PDF, select an authorized printer, negotiate supported attributes, render through one tested path, and track the job beyond the initial HTTP response.</p>
+<p>The separation makes future changes manageable. You can replace the Word converter, introduce asynchronous workers, add secure-release printing, or integrate a cloud print provider without changing the public upload contract. Begin with PDF and one controlled printer, make that path observable, and add formats and options one at a time.</p>
+<p><em>Build the narrow path first, measure it, and expand only when it is trustworthy.</em></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/c6df1466252c9442-c6df1466252c9442-secure-multi-format-printing-architecture-1.png" alt="c6df1466252c9442 secure multi format printing architecture[1]" /></p>
+</div>
+</article></main></body></html>
