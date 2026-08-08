@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code in Terminal, Desktop App, or IDE Extension — Which Should You Use?</title>
+<meta name="description" content="A practical Azure architecture for buffering 1,000+ file arrivals, enforcing fair per-tenant admission, and keeping shared ADF and SQL capacity within safe limits.">
+<meta name="author" content="Suresh Kumar Mani">
+<meta name="publication-request-id" content="9667488f-2221-452c-82a9-f8a5052142ca">
+<link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/claude-code-in-terminal-desktop-app-or-ide-extension-which-should-you-use/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code in Terminal, Desktop App, or IDE Extension — Which Should You Use?">
+<meta property="og:description" content="A practical Azure architecture for buffering 1,000+ file arrivals, enforcing fair per-tenant admission, and keeping shared ADF and SQL capacity within safe limits.">
+<meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/claude-code-in-terminal-desktop-app-or-ide-extension-which-should-you-use/">
+<meta property="og:image" content="https://manisuresh84.github.io/medium-source/assets/images/0528d9abf0f5fad8-claude-code-surfaces-hero.png">
+<meta property="article:published_time" content="2026-08-08T04:45:39.125Z">
+<meta property="article:modified_time" content="2026-08-08T04:45:39.125Z">
+<meta property="article:author" content="Suresh Kumar Mani">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="AI Coding">
+<meta property="article:tag" content="Developer Tools">
+<meta property="article:tag" content="Software Engineering">
+<meta property="article:tag" content="Productivity">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Claude Code in Terminal, Desktop App, or IDE Extension — Which Should You Use?","description":"A practical Azure architecture for buffering 1,000+ file arrivals, enforcing fair per-tenant admission, and keeping shared ADF and SQL capacity within safe limits.","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-08-08T04:45:39.125Z","dateModified":"2026-08-08T04:45:39.125Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/claude-code-in-terminal-desktop-app-or-ide-extension-which-should-you-use/","url":"https://manisuresh84.github.io/medium-source/articles/claude-code-in-terminal-desktop-app-or-ide-extension-which-should-you-use/","keywords":"Claude Code, AI Coding, Developer Tools, Software Engineering, Productivity","image":"https://manisuresh84.github.io/medium-source/assets/images/0528d9abf0f5fad8-claude-code-surfaces-hero.png"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+</head><body><main><article itemscope itemtype="https://schema.org/Article">
+<header><h1 itemprop="headline">Claude Code in Terminal, Desktop App, or IDE Extension — Which Should You Use?</h1><p class="subtitle">The practical guide to choosing the right Claude Code surface for focused development, visual orchestration, and automation.</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-08-08T04:45:39.125Z">2026-08-08</time></header>
+<figure><img src="https://manisuresh84.github.io/medium-source/assets/images/0528d9abf0f5fad8-claude-code-surfaces-hero.png" alt="Claude Code in Terminal, Desktop App, or IDE Extension — Which Should You Use?"></figure>
+<div itemprop="articleBody"><p>Claude Code now appears in several places: a terminal, a dedicated desktop app, and IDE extensions for editors such as VS Code and JetBrains. That can make the choice feel more important than it is.</p>
+<p>The underlying agent is broadly the same. What changes is the working surface around it: how you provide context, review edits, run parallel work, automate tasks, and stay in flow.</p>
+<p>Here is the short answer:</p>
+<p>Use the IDE extension as your everyday default, the Desktop app as your visual command center, and the terminal whenever you need automation, remote work, or maximum control.</p>
+<p>You do not need to pick one forever. The strongest setup uses all three deliberately.</p>
+<p>The decision in 30 seconds
+If you mostly…	Use…	Why
+Read, edit, and debug code all day	IDE extension	The code, diagnostics, selections, and diffs are already in front of you
+Delegate several tasks and review them visually	Desktop app	Parallel sessions, worktree isolation, previews, files, and diffs live in one workspace
+Automate work, use SSH, or live in the shell	Terminal CLI	It composes naturally with scripts, flags, pipes, Git, CI, and remote environments
+Are new to agentic coding	IDE extension	It provides the most familiar context and easiest review loop
+Manage a large migration or several independent fixes	Desktop app	It is designed to coordinate multiple visible workstreams
+Build repeatable engineering workflows	Terminal CLI	Non-interactive and scriptable behavior makes it the strongest automation surface
+Option 1: Claude Code in the terminal
+The CLI is the original power-user experience. Start it inside a repository and it can inspect files, understand Git state, run builds and tests, and use the command-line tools available in that environment.</p>
+<p>cd my-project
+claude
+Where the terminal wins
+The terminal has the least friction when your task already begins as a command:</p>
+<p>reproduce a failing test and fix it;
+search logs and trace a regression;
+upgrade dependencies across packages;
+work on a remote machine over SSH;
+combine Claude Code with shell scripts or CI;
+use CLI-specific flags and non-interactive output.
+It also keeps the operating model explicit. You see commands, file changes, test output, and Git operations in the same place. For senior engineers, DevOps teams, and people who already navigate repositories from a shell, that directness is a feature.</p>
+<p>Where the terminal creates friction
+Review is mostly textual. Large diffs, frontend layouts, PDFs, and several concurrent tasks are easier to understand visually. Multiple sessions usually mean multiple terminal windows unless you add your own multiplexer or use worktrees deliberately.</p>
+<p>The CLI is also less welcoming if the terminal is not already your home base. It gives you power, but it assumes you are comfortable interpreting commands and deciding what is safe to run.</p>
+<p>Use the terminal when
+Choose it for automation, repeatable workflows, remote development, infrastructure work, and deep shell-driven debugging. It is the best choice when Claude Code is one part of a larger toolchain rather than the entire workspace.</p>
+<p>Option 2: Claude Code in the Desktop app
+Claude Code Desktop wraps the same coding engine in a graphical workspace. Current versions add parallel sessions with automatic Git worktree isolation, an integrated terminal and file editor, visual diff review, app previews, side chats, PR monitoring, scheduled tasks, connectors, and local, SSH, or cloud environments. The app is available on macOS and Windows, but not Linux. Anthropic’s Desktop documentation has the current availability and feature list.</p>
+<p>Where Desktop wins
+Desktop is the best surface for orchestration. Imagine splitting a release into three pieces:</p>
+<p>repair a flaky test;
+update an API client;
+check the UI for regressions.
+In the CLI, that can become a collection of terminals and manually managed branches. In Desktop, each task can occupy an isolated session, while you move between its conversation, diff, terminal, and preview.</p>
+<p>Visual review is the other major advantage. A developer can inspect a diff, leave inline feedback, preview an application, or attach an image or PDF without turning everything into terminal-friendly text first.</p>
+<p>Where Desktop creates friction
+Desktop is not the best automation interface. Anthropic’s comparison explicitly reserves scripting and automation for the CLI. It also lacks some CLI-only capabilities, does not support Linux, and may not inherit every shell environment variable in the way your interactive terminal does.</p>
+<p>More panels can also tempt you to delegate too much at once. Parallelism is valuable only when the tasks are truly independent and you still review the results carefully.</p>
+<p>Use Desktop when
+Choose it for large refactors, parallel bug fixes, migrations, visual applications, pull-request monitoring, and long-running tasks you want to manage from one place. It is especially good for tech leads who delegate several bounded units of work and then review the combined result.</p>
+<p>Option 3: Claude Code in an IDE extension
+The IDE extension places Claude Code beside the files you are already reading. In VS Code, for example, you can reference selected code with file paths and line numbers, review edits in the native diff viewer, use editor diagnostics, and work with Jupyter notebooks through the IDE integration. Anthropic documents the current workflow in its IDE integration guide.</p>
+<p>Where the IDE wins
+The IDE gives Claude the most natural human-in-the-loop workflow:</p>
+<p>select code → explain intent → review plan → apply edit → inspect diff → run/debug
+Context is cheap to provide because the file, selection, and diagnostics are already visible. Review is equally cheap because changes appear in the same diff tools developers use without AI.</p>
+<p>That makes the extension excellent for everyday feature work:</p>
+<p>explain an unfamiliar method;
+refactor the selected component;
+write tests for the open file;
+fix errors from the Problems panel;
+implement a small feature and debug it immediately;
+ask focused questions without leaving the editor.
+Where the IDE creates friction
+An IDE is optimized around the current coding context, not around managing many independent agent sessions. It can feel crowded when a task spans several repositories, infrastructure consoles, or long-running workstreams.</p>
+<p>It is also easy to over-focus on the open file. Good engineering changes often require repository-wide investigation, test execution, and documentation updates. The agent can do those things, but your prompt should make the broader scope explicit.</p>
+<p>Use the IDE when
+Choose it for the majority of hands-on development: understanding code, making focused changes, debugging, and reviewing edits with minimal context switching. For most developers, this is the best place to start.</p>
+<p>The practical recommendation
+If your organization wants one standard onboarding path, start with the IDE extension. It meets developers where they already work and makes review visible. New users learn the most important habit early: treat generated code as a proposed change, not an unquestioned answer.</p>
+<p>Then add the other surfaces according to the job:</p>
+<p>Focused coding and debugging
+        ↓
+IDE extension</p>
+<p>Several independent tasks or visual review
+        ↓
+Desktop app</p>
+<p>Automation, CI, SSH, or shell-heavy operations
+        ↓
+Terminal CLI
+This is not three separate products to master. Anthropic describes Claude Code as the same underlying engine across platforms, with each surface tuned to a different workflow. Its platform comparison is useful when features change.</p>
+<p>Three example workflows</p>
+<ol>
+<li><p>Fixing a focused application bug
+Use the IDE extension. Open the failing component, select the relevant code, include the error message, ask for a plan, and review the patch in the native diff. Run the debugger or tests without leaving the editor.</p>
+</li>
+<li><p>Modernizing a large codebase
+Use Desktop to coordinate the migration. Give separate sessions non-overlapping packages or tasks and let automatic worktree isolation prevent them from editing the same checkout. Review each visual diff, then run the full validation suite. Open the result in your IDE for final integration work.</p>
+</li>
+<li><p>Repairing a deployment pipeline
+Use the CLI. Start in the same shell environment as the pipeline, inspect logs, run the failing command, and keep the fix reproducible. Once stable, convert the useful sequence into a script or CI step instead of leaving it only in conversation history.</p>
+</li>
+</ol>
+<p>A note about safety
+Whichever surface you choose, the risk is tied to permissions, not visual design. An agent that can run commands and edit files can make consequential changes from a friendly IDE panel just as easily as from a terminal.</p>
+<p>Use manual approvals for unfamiliar repositories, review diffs, protect secrets, run tests, and commit in small units. Anthropic specifically recommends restricted/manual review modes for untrusted workspaces in its IDE security guidance. Desktop computer-use features have a different trust boundary because they can interact with approved applications on the real desktop; enable them only when the task requires it.</p>
+<p>Final verdict
+There is no universal winner because each interface optimizes a different layer of engineering work:</p>
+<p>IDE extension: best overall default for active software development.
+Desktop app: best for visual review, parallel sessions, and orchestration.
+Terminal CLI: best for experts, automation, remote systems, and maximum flexibility.
+If you are unsure, install the IDE extension first. When one conversation becomes three independent jobs, move to Desktop. When the workflow needs to become repeatable, remote, or part of CI, move it into the terminal.</p>
+<p>The winning choice is not the interface with the most features. It is the one that keeps the work understandable, reviewable, and close to the tools you already trust.</p>
+<p>Disclosure: The hero illustration is AI-generated. Product capabilities were checked against Anthropic’s official documentation on August 8, 2026.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/0528d9abf0f5fad8-claude-code-surfaces-hero.png" alt="claude code surfaces hero" /></p>
+</div>
+</article></main></body></html>
