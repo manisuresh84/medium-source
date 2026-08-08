@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>n8n + Podman + MCP: Build a Local HR Automation with Webhooks and Model Context Protocol</title>
+<meta name="description" content="Learn how to run n8n with Podman, import a ready-made workflow, test its webhook, and connect a local MCP server without requiring an LLM or cloud credentials.">
+<meta name="author" content="Suresh Kumar Mani">
+<meta name="publication-request-id" content="40814e3e-fc33-4a5a-a3e1-1e9f03474671">
+<link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/n8n-podman-mcp-build-a-local-hr-automation-with-webhooks-and-model-context-protocol/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="n8n + Podman + MCP: Build a Local HR Automation with Webhooks and Model Context Protocol">
+<meta property="og:description" content="Learn how to run n8n with Podman, import a ready-made workflow, test its webhook, and connect a local MCP server without requiring an LLM or cloud credentials.">
+<meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/n8n-podman-mcp-build-a-local-hr-automation-with-webhooks-and-model-context-protocol/">
+<meta property="og:image" content="https://manisuresh84.github.io/medium-source/assets/images/ae29ee05797d17e3-00-hero.png">
+<meta property="article:published_time" content="2026-08-08T23:42:42.765Z">
+<meta property="article:modified_time" content="2026-08-08T23:42:42.765Z">
+<meta property="article:author" content="Suresh Kumar Mani">
+<meta property="article:tag" content="n8n">
+<meta property="article:tag" content="Podman">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Automation">
+<meta property="article:tag" content="DevOps">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"n8n + Podman + MCP: Build a Local HR Automation with Webhooks and Model Context Protocol","description":"Learn how to run n8n with Podman, import a ready-made workflow, test its webhook, and connect a local MCP server without requiring an LLM or cloud credentials.","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-08-08T23:42:42.765Z","dateModified":"2026-08-08T23:42:42.765Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/n8n-podman-mcp-build-a-local-hr-automation-with-webhooks-and-model-context-protocol/","url":"https://manisuresh84.github.io/medium-source/articles/n8n-podman-mcp-build-a-local-hr-automation-with-webhooks-and-model-context-protocol/","keywords":"n8n, Podman, MCP, Automation, DevOps","image":"https://manisuresh84.github.io/medium-source/assets/images/ae29ee05797d17e3-00-hero.png"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+</head><body><main><article itemscope itemtype="https://schema.org/Article">
+<header><h1 itemprop="headline">n8n + Podman + MCP: Build a Local HR Automation with Webhooks and Model Context Protocol</h1><p class="subtitle">Run a deterministic HR workflow locally, import it as JSON, and expose it through both HTTP and MCP tools.</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-08-08T23:42:42.765Z">2026-08-08</time></header>
+<figure><img src="https://manisuresh84.github.io/medium-source/assets/images/ae29ee05797d17e3-00-hero.png" alt="n8n + Podman + MCP: Build a Local HR Automation with Webhooks and Model Context Protocol"></figure>
+<div itemprop="articleBody"><p>Containers make applications repeatable. Workflow JSON makes automations repeatable. Webhooks give ordinary applications a simple HTTP boundary. Model Context Protocol (MCP) adds standardized discovery and invocation for tools. This tutorial combines all four—locally, deterministically, and without an LLM or cloud credential.</p>
+<p>We will import a ready-made n8n workflow, call it directly with <code>curl</code>, then call the same webhook through a small MCP server. All employee details and policies are fictional.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/ae29ee05797d17e3-00-hero.png" alt="MCP client, local MCP server, webhook, and n8n workflow inside Podman." /></p>
+<p><em>Local HR automation with Webhooks and MCP tools.</em></p>
+<h2>What We Are Building</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/506a4f2a7d144ac7-03-n8n-ui.png" alt="Two paths enter one n8n workflow: HTTP directly or MCP through a local server." /></p>
+<p><em>Both entry paths reuse the same deterministic workflow. Illustrative diagram.</em></p>
+<p>The direct path is <code>curl → n8n Webhook</code>. The MCP path is <code>MCP Client → Local MCP Server → n8n Webhook</code>. MCP does not replace REST here; the webhook remains a normal HTTP integration boundary.</p>
+<h2>Why MCP?</h2>
+<p>A traditional API client must already know which endpoint to call and how its payload is shaped. An MCP client can ask a server which tools exist, inspect their descriptions and input schemas, and invoke a selected tool using the protocol.</p>
+<p>An MCP host contains or manages an MCP client. That client connects to an MCP server over a transport. A server may expose tools, resources, and prompts. This tutorial focuses on tools: named capabilities with descriptions, typed inputs, handlers, and results.</p>
+<p>For this local network service we use <strong>Streamable HTTP</strong>, the current HTTP transport. The official SDK documentation recommends stdio when a local client launches a server as a child process and Streamable HTTP for a network-accessible server. We bind it only to <code>127.0.0.1</code>.</p>
+<h2>Prerequisites</h2>
+<p>Install Podman, Node.js 20 or later, npm, a browser, and either <code>curl</code> or PowerShell. Docker is a drop-in alternative for the basic container command.</p>
+<h2>Start n8n with Podman</h2>
+<pre><code class="language-bash">mkdir -p ~/.n8n
+
+podman run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  docker.n8n.io/n8nio/n8n
+</code></pre>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/968208d46364c896-02-start-n8n.png" alt="The verified container command for starting n8n." /></p>
+<p><em>The startup command. Illustrative diagram; live image download was registry-rate-limited during capture.</em></p>
+<p><code>-it</code> attaches the terminal; <code>--rm</code> removes the stopped container; <code>--name n8n</code> supplies the name used by our import script; <code>-p</code> maps the UI port; and <code>-v</code> persists n8n data outside the disposable container. Open <a href="http://localhost:5678">http://localhost:5678</a>.</p>
+<p>On Fedora, RHEL, or another SELinux-enforcing host, use <code>:Z</code> for this private bind mount: <code>-v ~/.n8n:/home/node/.n8n:Z</code>. Do not add it blindly on Windows, macOS, or non-SELinux systems. The Docker equivalent simply replaces <code>podman</code> with <code>docker</code>.</p>
+<h2>Import the Workflow Instead of Building It Manually</h2>
+<blockquote>
+<p>Instead of manually creating every node, import the supplied JSON workflow and start testing immediately.</p>
+</blockquote>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/1860d987398e6e78-04-import-workflow-menu.png" alt="Manual construction compared with importing workflow JSON." /></p>
+<p><em>Workflow JSON turns a multi-step UI setup into a repeatable deployment artifact. Illustrative diagram.</em></p>
+<p>In the n8n editor, open the workflow menu, choose <strong>Import from File</strong>, select <code>workflow/hr-leave-webhook.json</code>, then save the imported workflow. Menu placement can change between releases.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/1860d987398e6e78-04-import-workflow-menu.png" alt="The workflow import action." /></p>
+<p><em>Importing the supplied JSON. Illustrative diagram, not a fabricated n8n screenshot.</em></p>
+<p>The CLI is faster and scriptable. Current n8n CLI documentation supports <code>n8n import:workflow --input=&lt;file&gt;</code>:</p>
+<pre><code class="language-bash">podman cp workflow/hr-leave-webhook.json n8n:/tmp/hr-leave-webhook.json
+podman exec n8n n8n import:workflow --input=/tmp/hr-leave-webhook.json
+</code></pre>
+<p>The supplied <code>podman/import-workflow.sh</code> and PowerShell equivalent add existence and running-state checks. Refresh the browser afterward. Imports are inactive, and workflow exports do not contain credential secrets; this workflow needs no credentials.</p>
+<p>As an alternative, mount the project workflow directory read-only with <code>-v "$PWD/workflow:/imports:ro"</code>, then import <code>/imports/hr-leave-webhook.json</code>. On SELinux, the appropriate read-only label is commonly <code>:ro,Z</code>. <code>podman cp</code> is easier for beginners because it avoids host-path and labeling differences.</p>
+<h2>Explore the Imported n8n Workflow</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-07-hr-workflow-overview.png" alt="Webhook, normalization, validation, decision, and response flow." /></p>
+<p><em>The imported workflow uses built-in nodes only. Illustrative diagram.</em></p>
+<p>The nodes are <strong>Webhook</strong>, <strong>Code</strong>, <strong>If</strong>, <strong>Edit Fields (Set)</strong>, and <strong>Respond to Webhook</strong>. The Webhook accepts <code>POST /hr-leave-request</code>. Code normalizes and validates the body. If routes <code>leaveDays &lt;= 5</code> to <code>AUTO_APPROVED</code>; larger requests go to <code>MANAGER_REVIEW</code>.</p>
+<p>This decision exists only to demonstrate branching. It is not a recommended HR policy.</p>
+<h3>n8n details that make the import reproducible</h3>
+<p>The Webhook is configured to respond through the <strong>Respond to Webhook</strong> node, rather than returning immediately from the trigger. Incoming JSON is normally available under <code>$json.body</code>, so the normalization code deliberately reads <code>$json.body ?? $json</code> to remain convenient in manual tests. Both branches reduce their output to the four public response fields before reaching the shared response node.</p>
+<p>The imported workflow is inactive until you review and activate it. Its editor Test URL and active Production URL are different registrations, not aliases. Finally, the container is disposable but <code>/home/node/.n8n</code> is bind-mounted: stopping a <code>--rm</code> container removes the container while preserving the local n8n database and workflow configuration under <code>~/.n8n</code>.</p>
+<h2>Test the Webhook Directly</h2>
+<p>Activate the workflow, then run:</p>
+<pre><code class="language-bash">./examples/webhook-curl.sh
+</code></pre>
+<p>The Production URL is <code>http://localhost:5678/webhook/hr-leave-request</code> and requires an active workflow. The Test URL contains <code>/webhook-test/</code>; open the Webhook node and select <strong>Listen for test event</strong> before sending its one-run test request.</p>
+<p>The three-day response is:</p>
+<pre><code class="language-json">{
+  "success": true,
+  "employeeId": "EMP-1042",
+  "status": "AUTO_APPROVED",
+  "message": "Leave request accepted by the tutorial policy."
+}
+</code></pre>
+<p>Changing <code>leaveDays</code> to <code>10</code> returns <code>MANAGER_REVIEW</code>.</p>
+<h2>What Is an MCP Tool?</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/628215ed821714aa-12-mcp-tool-schema.png" alt="Anatomy of the submit_leave_request MCP tool." /></p>
+<p><em>Tool name, description, schema, handler, and result. Illustrative diagram.</em></p>
+<p><code>submit_leave_request</code> declares a Zod input schema. The SDK turns it into a discoverable JSON schema and validates arguments before the handler runs. The handler performs an HTTP POST to <code>N8N_WEBHOOK_URL</code>, parses the JSON response, and returns both text content and structured content to the client.</p>
+<p>That separation matters. The tool name is the stable capability identifier. Its description helps a person or compatible client understand when it applies. The schema defines what a valid call looks like. The handler contains the actual integration code. Finally, the tool result carries the outcome back over MCP. n8n remains responsible for workflow orchestration rather than MCP protocol details.</p>
+<p><code>get_leave_policy</code> returns the local fictional rule without contacting n8n. <code>health_check</code> reports whether the MCP process is healthy and whether n8n's <code>/healthz</code> endpoint is reachable. It never puts an internal stack trace in a normal tool result.</p>
+<h2>Start the MCP Server</h2>
+<pre><code class="language-bash">npm install
+N8N_WEBHOOK_URL=http://localhost:5678/webhook/hr-leave-request \
+  npm --workspace mcp-server start
+</code></pre>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">$env:N8N_WEBHOOK_URL = 'http://localhost:5678/webhook/hr-leave-request'
+npm --workspace mcp-server start
+</code></pre>
+<p>The Streamable HTTP endpoint is <code>http://127.0.0.1:3001/mcp</code>.</p>
+<h2>Discover and Call MCP Tools</h2>
+<p>Run the supplied official-SDK client:</p>
+<pre><code class="language-bash">npm --workspace mcp-client start
+</code></pre>
+<p>It connects, calls <code>tools/list</code>, prints all three names, and invokes <code>submit_leave_request</code>. To debug interactively, run <code>npx @modelcontextprotocol/inspector</code>, select Streamable HTTP, and enter the endpoint above.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/628215ed821714aa-11-mcp-tools-list.png" alt="The discovered local MCP tools." /></p>
+<p><em>The expected tools/list result. Illustrative diagram.</em></p>
+<p>The request travels through MCP, into the tool handler, over ordinary HTTP to n8n, and back as an MCP tool result. No model chooses the tool; the client calls it deterministically.</p>
+<h2>How the Entire Request Flows</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/31116205e88b9e21-13-mcp-submit-leave.png" alt="Sequence diagram showing tool discovery and leave submission." /></p>
+<p><em>Tool discovery happens before invocation. Illustrative diagram.</em></p>
+<p>The included integration test starts a mock local n8n endpoint, connects a real SDK client to the real MCP server, verifies all three tool names, and confirms both <code>AUTO_APPROVED</code> and <code>MANAGER_REVIEW</code>:</p>
+<pre><code class="language-bash">npm test --workspace mcp-server
+</code></pre>
+<h2>n8n as an MCP Server vs n8n as an MCP Client</h2>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/9acfca0b053500ad-16-native-n8n-mcp.png" alt="n8n native MCP directions." /></p>
+<p><em>Native n8n can expose or consume MCP capabilities. Illustrative diagram.</em></p>
+<p>Current n8n documentation lists three relevant nodes. <strong>MCP Server Trigger</strong> exposes connected workflow tools to MCP clients. The <strong>MCP Client</strong> core node can list or execute tools on an external MCP server. <strong>MCP Client Tool</strong> is an AI sub-node that supplies external MCP tools to an AI Agent, so that particular direction introduces an agent and usually a model credential.</p>
+<p>n8n also documents an instance-level MCP server for authorized access to selected workflows. These native features are useful, but they are optional here. The standalone server makes tool registration and transport mechanics visible without requiring an agent.</p>
+<p>Choose the native server direction when n8n should own the MCP endpoint and its connected workflow tools. Choose the client direction when an n8n workflow needs capabilities hosted elsewhere. Choose a small adapter like this tutorial's server when you want explicit protocol code, a carefully limited public tool surface, or to reuse an existing webhook without redesigning the workflow.</p>
+<p>A native MCP workflow JSON is not supplied because the local n8n image could not be downloaded and runtime-validated during production. Publishing an unverified export would contradict the tutorial's reproducibility goal.</p>
+<h2>Security Note</h2>
+<p>Do not expose an unauthenticated MCP server or n8n webhook to the public internet. Production needs TLS, authentication, authorization, tool-level permissions, webhook protection, secret management, input limits, audit logs, container hardening, and workflow versioning.</p>
+<p>MCP tool availability does not imply that a user is authorized to perform its action. Discovery, authentication, authorization, and business permission are separate concerns.</p>
+<p>Never send medical information, government identifiers, Social Security numbers, salary or performance data, disciplinary records, protected characteristics, or real employee information through this sample. Real HR systems also require classification, retention, access, and audit policies.</p>
+<p>The tutorial's loopback binding and Host-header check reduce accidental network exposure, but they are not authentication. A production server should also rate-limit requests, cap payload size, avoid returning implementation details, and authorize every tool call against the caller and affected employee scope.</p>
+<h2>What We Built</h2>
+<p>We ran n8n in Podman, imported workflow JSON, tested the webhook directly, registered three MCP tools with the official SDK, and sent the same request through MCP. The clean boundary is:</p>
+<pre><code class="language-text">MCP Client → MCP Server → n8n Webhook → HR Workflow → MCP Result
+</code></pre>
+<p>Next steps might add authenticated manager approval, database persistence, OAuth, Teams or Slack notifications, Workday or ServiceNow integration, external MCP tools, or a separately secured n8n-native MCP workflow.</p>
+<h2>Resources</h2>
+<ul>
+<li><a href="https://modelcontextprotocol.io/docs/">Model Context Protocol documentation</a></li>
+<li><a href="https://github.com/modelcontextprotocol/typescript-sdk">Official MCP TypeScript SDK</a></li>
+<li><a href="https://github.com/modelcontextprotocol/inspector">MCP Inspector</a></li>
+<li><a href="https://docs.n8n.io/hosting/cli-commands/">n8n CLI commands</a></li>
+<li><a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/">n8n Webhook node</a></li>
+<li><a href="https://docs.n8n.io/">n8n documentation</a></li>
+<li><a href="https://docs.podman.io/en/latest/markdown/podman-run.1.html">Podman run documentation</a></li>
+</ul>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/f98be68e00e73eb5-01-podman-version.png" alt="podman version" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-05-imported-workflow.png" alt="imported workflow" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-06-webhook-node.png" alt="webhook node" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-08-webhook-test.png" alt="webhook test" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-09-workflow-response.png" alt="workflow response" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/628215ed821714aa-10-mcp-server-terminal.png" alt="mcp server terminal" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/998ba3c09ed1cb08-14-n8n-mcp-execution.png" alt="n8n mcp execution" /></p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/31116205e88b9e21-15-mcp-response.png" alt="mcp response" /></p>
+</div>
+</article></main></body></html>
