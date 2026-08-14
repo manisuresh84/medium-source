@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use the Codex Chrome Skill to Document Azure Without Leaving Your Browser</title>
+<meta name="description" content="Learn how the Codex Chrome skill can navigate an existing signed-in Azure session, interact with a simple resource-health view, and capture focused screenshots without accessing stored credentials.">
+<meta name="author" content="Suresh Kumar Mani">
+<meta name="publication-request-id" content="dd8d0622-e948-4cdc-89c7-09a823613a01">
+<link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/use-the-codex-chrome-skill-to-document-azure-without-leaving-your-browser/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Use the Codex Chrome Skill to Document Azure Without Leaving Your Browser">
+<meta property="og:description" content="Learn how the Codex Chrome skill can navigate an existing signed-in Azure session, interact with a simple resource-health view, and capture focused screenshots without accessing stored credentials.">
+<meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/use-the-codex-chrome-skill-to-document-azure-without-leaving-your-browser/">
+
+<meta property="article:published_time" content="2026-08-14T14:05:34.730Z">
+<meta property="article:modified_time" content="2026-08-14T14:05:34.730Z">
+<meta property="article:author" content="Suresh Kumar Mani">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="Azure">
+<meta property="article:tag" content="Browser Automation">
+<meta property="article:tag" content="Documentation">
+<meta property="article:tag" content="Productivity">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Use the Codex Chrome Skill to Document Azure Without Leaving Your Browser","description":"Learn how the Codex Chrome skill can navigate an existing signed-in Azure session, interact with a simple resource-health view, and capture focused screenshots without accessing stored credentials.","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-08-14T14:05:34.730Z","dateModified":"2026-08-14T14:05:34.730Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/use-the-codex-chrome-skill-to-document-azure-without-leaving-your-browser/","url":"https://manisuresh84.github.io/medium-source/articles/use-the-codex-chrome-skill-to-document-azure-without-leaving-your-browser/","keywords":"Codex, Azure, Browser Automation, Documentation, Productivity"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+</head><body><main><article itemscope itemtype="https://schema.org/Article">
+<header><h1 itemprop="headline">Use the Codex Chrome Skill to Document Azure Without Leaving Your Browser</h1><p class="subtitle">A practical workflow for navigating a signed-in Azure session and turning UI evidence into useful documentation</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-08-14T14:05:34.730Z">2026-08-14</time></header>
+
+<div itemprop="articleBody"><p>Cloud consoles are excellent at showing what is happening, but turning that live state into clear documentation can be surprisingly tedious. You navigate to the right resource, adjust a filter, open a panel, take a screenshot, crop it, and then repeat the process for every important step.</p>
+<p>The Codex Chrome skill can handle much of that browser work while using your existing Chrome session. If Azure is already open and signed in, Codex can navigate the same visible web interface, interact with it, and capture the exact views needed for a guide or troubleshooting record.</p>
+<p>The important boundary is simple: <strong>you sign in, and Codex works with the resulting browser session</strong>. It does not inspect saved passwords, read stored credentials, or bypass authentication.</p>
+<h2>A simple example: document an Azure resource-health view</h2>
+<p>Imagine that you need a short operational guide showing engineers how to check whether an Azure resource is healthy. The final document needs only three images:</p>
+<ol>
+<li>The resource overview page.</li>
+<li>A health or monitoring panel with the relevant time range selected.</li>
+<li>A filtered table showing the most useful status rows.</li>
+</ol>
+<p>This is a small task, but it demonstrates the complete workflow: navigation, interaction, focused capture, and documentation.</p>
+<h2>Before you begin</h2>
+<p>Chrome must have the ChatGPT browser extension enabled under <strong>Settings → Computer use</strong>. You should also open Azure and complete sign-in yourself, including any multifactor authentication required by your organization.</p>
+<p>That separation is a feature, not an inconvenience. Authentication stays under your control, while Codex starts working only after the browser is ready.</p>
+<p>Once signed in, give Codex a scoped request such as:</p>
+<blockquote>
+<p>In my existing Chrome session, open the Azure resource named <code>demo-web-app</code>. Capture the Overview page, then open Resource health, select the last 24 hours if that option is available, and capture the status panel. Do not change the resource.</p>
+</blockquote>
+<p>The request identifies the browser, target, desired evidence, and safety boundary. It also avoids a vague instruction like “check Azure,” which leaves too many choices unstated.</p>
+<h2>What Codex can do in the UI</h2>
+<p>With the Chrome skill connected, Codex can perform the same visible actions you would normally complete by hand:</p>
+<ul>
+<li>Navigate through Azure or another web application.</li>
+<li>Open menus, tabs, panels, and dialogs.</li>
+<li>Apply filters and choose time ranges.</li>
+<li>Read visible table and status information.</li>
+<li>Capture the full page or only the current viewport.</li>
+<li>Isolate a specific panel, dialog, table, or workflow step for a cleaner image.</li>
+</ul>
+<p>This is especially useful when a document needs a sequence of screenshots. Codex can keep the visual state consistent between steps instead of forcing you to rebuild the same filters for every capture.</p>
+<h2>Prefer focused screenshots over giant pages</h2>
+<p>A full-page screenshot is useful for orientation, but it is rarely the best image for every step. Azure pages can contain navigation rails, headers, help controls, and large areas unrelated to the point being explained.</p>
+<p>For the resource-health guide, use one wide screenshot for context and focused captures for the evidence:</p>
+<ul>
+<li><strong>Overview:</strong> capture enough of the page to establish the resource name and current summary.</li>
+<li><strong>Health panel:</strong> capture the panel heading, selected time range, and status together.</li>
+<li><strong>Filtered table:</strong> capture the column headings and relevant rows, excluding unrelated navigation where possible.</li>
+</ul>
+<p>The result is easier to read on Medium, particularly on a phone. A reader should not need to zoom into a desktop-sized screenshot to discover which status matters.</p>
+<h2>Ask for interaction before capture</h2>
+<p>Screenshots are most valuable after the UI has been placed in a meaningful state. A strong prompt describes both the interaction and the final view:</p>
+<blockquote>
+<p>Open the monitoring tab, filter severity to Critical and Warning, wait for the table to update, then capture the table and its active filter controls.</p>
+</blockquote>
+<p>This produces evidence that is self-explanatory. The screenshot shows not only the results but also the conditions that produced them.</p>
+<p>The same pattern works outside Azure. It can document a deployment dashboard, an internal admin page, a CI result, a support workflow, or a multi-step configuration dialog.</p>
+<h2>Keep browser automation safe and reviewable</h2>
+<p>Treat navigation and evidence collection differently from actions that change state. Opening pages, selecting display filters, and taking screenshots are generally read-only. Deleting a resource, changing access, restarting a service, or submitting a configuration form is not.</p>
+<p>For documentation work, state the boundary directly:</p>
+<blockquote>
+<p>Navigate and capture only. Do not save changes, submit forms, restart services, or modify permissions.</p>
+</blockquote>
+<p>Also review screenshots before publishing. Cloud interfaces can display subscription IDs, tenant names, email addresses, internal hostnames, IP addresses, or resource naming conventions. Crop, blur, or recapture when a detail is unnecessary for the lesson.</p>
+<h2>A reusable capture checklist</h2>
+<p>Before asking Codex to collect a workflow, decide on five things:</p>
+<ul>
+<li><strong>Target:</strong> the exact portal, resource, or page.</li>
+<li><strong>Starting state:</strong> whether you are already signed in and where the browser should begin.</li>
+<li><strong>Interactions:</strong> the tabs, filters, menus, or dialogs to open.</li>
+<li><strong>Evidence:</strong> full-page, viewport, panel, table, or step-by-step screenshots.</li>
+<li><strong>Boundaries:</strong> actions that must not be performed and sensitive details that must not appear.</li>
+</ul>
+<p>This checklist turns browser automation into a predictable documentation process instead of an open-ended browsing session.</p>
+<h2>The practical payoff</h2>
+<p>The Codex Chrome skill is not just a screenshot shortcut. Its real value is preserving the relationship between an instruction and the visible evidence supporting it. Codex can navigate to a specific state, verify what is on screen, and capture the part that makes the next explanation credible.</p>
+<p>For our simple Azure example, that means a concise guide with a clear overview, a meaningful health panel, and a filtered status table—all collected from the browser session you already control.</p>
+<p>You remain responsible for signing in and deciding what may be shared. Codex handles the repetitive UI work in between. That division makes browser-assisted documentation both useful and appropriately bounded.</p>
+</div>
+</article></main></body></html>
