@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Capture Any Web UI with the Codex Chrome Skill: A Step-by-Step Example</title>
+<meta name="description" content="A hands-on guide to using the Codex Chrome skill for UI screenshots, including a complete example that captures a local publishing application in two useful states.">
+<meta name="author" content="Suresh Kumar Mani">
+<meta name="publication-request-id" content="d1207d9f-4588-4585-9feb-e6d33f5d9d66">
+<link rel="canonical" href="https://manisuresh84.github.io/medium-source/articles/capture-any-web-ui-with-the-codex-chrome-skill-a-step-by-step-example/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Capture Any Web UI with the Codex Chrome Skill: A Step-by-Step Example">
+<meta property="og:description" content="A hands-on guide to using the Codex Chrome skill for UI screenshots, including a complete example that captures a local publishing application in two useful states.">
+<meta property="og:url" content="https://manisuresh84.github.io/medium-source/articles/capture-any-web-ui-with-the-codex-chrome-skill-a-step-by-step-example/">
+
+<meta property="article:published_time" content="2026-08-14T14:31:42.800Z">
+<meta property="article:modified_time" content="2026-08-14T14:31:42.800Z">
+<meta property="article:author" content="Suresh Kumar Mani">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="Chrome">
+<meta property="article:tag" content="Screen Capture">
+<meta property="article:tag" content="Browser Automation">
+<meta property="article:tag" content="Technical Writing">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Capture Any Web UI with the Codex Chrome Skill: A Step-by-Step Example","description":"A hands-on guide to using the Codex Chrome skill for UI screenshots, including a complete example that captures a local publishing application in two useful states.","author":{"@type":"Person","name":"Suresh Kumar Mani"},"datePublished":"2026-08-14T14:31:42.800Z","dateModified":"2026-08-14T14:31:42.800Z","mainEntityOfPage":"https://manisuresh84.github.io/medium-source/articles/capture-any-web-ui-with-the-codex-chrome-skill-a-step-by-step-example/","url":"https://manisuresh84.github.io/medium-source/articles/capture-any-web-ui-with-the-codex-chrome-skill-a-step-by-step-example/","keywords":"Codex, Chrome, Screen Capture, Browser Automation, Technical Writing"}</script>
+<style>body{max-width:760px;margin:48px auto;padding:0 20px;font:18px/1.72 system-ui;color:#202124}h1,h2,h3{line-height:1.2}.subtitle{margin-top:-8px;color:#62666a;font:1.2em/1.5 Georgia,serif}a{color:#1769aa}img{display:block;max-width:100%;height:auto;margin:28px auto}figure{margin:32px 0}blockquote{margin:28px 0;padding:2px 0 2px 22px;border-left:4px solid #202124;font:italic 1.15em/1.6 Georgia,serif}code,pre{background:#f5f5f5}code{padding:.1em .3em;border-radius:4px}pre{padding:16px;overflow:auto;border-radius:8px}pre code{padding:0;background:none}hr{margin:42px 0;border:0;border-top:1px solid #ddd}table{display:block;width:100%;overflow:auto;border-collapse:collapse}th,td{padding:9px 12px;border:1px solid #ddd}th{background:#f5f5f5;text-align:left}.task-list-item{list-style:none}</style>
+</head><body><main><article itemscope itemtype="https://schema.org/Article">
+<header><h1 itemprop="headline">Capture Any Web UI with the Codex Chrome Skill: A Step-by-Step Example</h1><p class="subtitle">Use your existing Chrome session to navigate a web app, prepare its UI, and capture documentation-ready screenshots</p><p>By <span itemprop="author">Suresh Kumar Mani</span></p><time itemprop="datePublished" datetime="2026-08-14T14:31:42.800Z">2026-08-14</time></header>
+
+<div itemprop="articleBody"><p>The Codex Chrome skill can capture <strong>any UI that is visible and accessible in your Chrome session</strong>. Azure is one possible target, but it is not the point of the capability. The same workflow applies to GitHub, an internal admin console, a local development site, a monitoring dashboard, a support portal, or a SaaS application.</p>
+<p>More importantly, the skill does more than take a static screenshot. It can navigate to the correct page, open a menu or panel, select filters, wait for the UI to update, and then capture the state that explains the workflow.</p>
+<p>This tutorial proves that flow with a small example: documenting a local web application called <strong>Publishing Studio</strong>. We will capture an overview of the page and then a second viewport after scrolling to the preview and workflow controls.</p>
+<h2>What the Chrome skill can capture</h2>
+<p>Depending on the documentation goal, Codex can produce:</p>
+<ul>
+<li>A <strong>viewport screenshot</strong> of exactly what is currently visible.</li>
+<li>A <strong>full-page screenshot</strong> that includes content below the fold.</li>
+<li>A <strong>focused capture</strong> of a panel, table, dialog, form, or workflow step.</li>
+<li>A <strong>sequence of screenshots</strong> taken after different UI interactions.</li>
+</ul>
+<p>The target does not need to be public. Because the skill can use your existing Chrome session, it can work with a site you have already signed into. You complete authentication yourself; Codex does not inspect stored credentials, read saved passwords, or bypass sign-in.</p>
+<h2>The sample task</h2>
+<p>Our goal is simple:</p>
+<ol>
+<li>Open the Publishing Studio web application.</li>
+<li>Capture the top of the page for orientation.</li>
+<li>Scroll to the editor preview and workflow controls.</li>
+<li>Capture that second state.</li>
+<li>Leave the application unchanged.</li>
+</ol>
+<p>This example uses a local URL, but you can replace it with any site Chrome can open.</p>
+<h2>Step 1: Prepare Chrome</h2>
+<p>Enable the ChatGPT browser extension under <strong>Settings → Computer use</strong>. If the target application requires authentication, open it in Chrome and sign in yourself before starting the task.</p>
+<p>For a private application, also check what may appear on screen. Names, email addresses, customer records, subscription identifiers, internal URLs, and access tokens should not be included unless they are necessary and safe to publish.</p>
+<h2>Step 2: Give Codex a scoped capture request</h2>
+<p>Use a prompt that defines the target, UI actions, required captures, and safety boundary:</p>
+<blockquote>
+<p>Use my existing Chrome session. Open <code>http://localhost:8088</code>. Capture the initial viewport of Publishing Studio. Then scroll until the article preview and workflow controls are visible and capture a second viewport. Do not submit the article or change any form fields. Save both screenshots for a tutorial.</p>
+</blockquote>
+<p>This is better than saying “take screenshots of my app.” It tells Codex what success looks like and prevents accidental state changes.</p>
+<h2>Step 3: Codex opens and verifies the page</h2>
+<p>Codex connects to Chrome, opens the requested URL, and reads the visible page state before acting. That verification matters. It confirms that the intended application loaded and provides reliable targets for later interactions.</p>
+<p>The first screenshot establishes context: the product name, its purpose, the three-stage workflow, and the beginning of the authoring interface are visible together.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/e316001938a26ee5-chrome-skill-ui-overview.jpg" alt="Publishing Studio overview captured by the Codex Chrome skill" /></p>
+<p>This is a <strong>viewport capture</strong>. It represents what a reader would see without scrolling and works well as the opening image in a tutorial.</p>
+<h2>Step 4: Codex prepares the next UI state</h2>
+<p>Next, Codex scrolls down within the same page. The goal is not simply to get a different picture; it is to reveal the controls involved in the next part of the workflow.</p>
+<p>After the scroll, the preview, image-upload section, and <strong>Submit for approval</strong> control are visible. Codex then captures the updated viewport.</p>
+<p><img src="https://manisuresh84.github.io/medium-source/assets/images/33c99000bce88f65-chrome-skill-ui-controls.jpg" alt="Publishing Studio preview and workflow controls captured after scrolling" /></p>
+<p>The two screenshots now form a useful sequence:</p>
+<ul>
+<li>The first image answers, “Where am I and what does this application do?”</li>
+<li>The second answers, “Where are the preview and publishing controls?”</li>
+</ul>
+<p>No form was submitted and no application data was changed.</p>
+<h2>Step 5: Ask for focused captures when needed</h2>
+<p>For a more detailed guide, extend the request with specific UI states. For example:</p>
+<blockquote>
+<p>Select Preview, scroll to Workflow controls, and capture only the right-side control panel. Then open the tags menu and capture the menu with its options visible. Do not select a tag or submit the form.</p>
+</blockquote>
+<p>This pattern is useful for almost any web UI:</p>
+<ul>
+<li>Open a GitHub Actions run and capture the failed job summary.</li>
+<li>Apply a date filter in a monitoring dashboard and capture the chart with the filter visible.</li>
+<li>Open a settings dialog and capture each tab without saving changes.</li>
+<li>Filter a data table and capture the active filters together with the results.</li>
+<li>Walk through a support workflow and capture every step before the final submission.</li>
+</ul>
+<p>The best screenshots show both the result and enough UI context to explain how that result was produced.</p>
+<h2>Viewport, full-page, or focused panel?</h2>
+<p>Choose the smallest capture that communicates the lesson:</p>
+<ul>
+<li>Use a <strong>viewport</strong> for page orientation or one screen-sized workflow step.</li>
+<li>Use <strong>full-page</strong> when readers need the overall layout or content below the fold.</li>
+<li>Use a <strong>focused panel</strong> for tables, dialogs, settings, errors, and other detail-heavy UI.</li>
+<li>Use a <strong>sequence</strong> when the state changes after clicks, filters, or form input.</li>
+</ul>
+<p>Full-page images are often too tall for Medium and difficult to read on a phone. A short sequence of focused images usually tells the story more clearly.</p>
+<h2>A reusable prompt template</h2>
+<p>Use this template for future capture tasks:</p>
+<blockquote>
+<p>Use my existing Chrome session. Open <strong>[URL or application]</strong>. Navigate to <strong>[page or resource]</strong>. Perform these read-only UI actions: <strong>[tabs, filters, menus, scrolling]</strong>. Capture <strong>[viewport, full page, panel, dialog, or sequence]</strong> after <strong>[state to verify]</strong> is visible. Do not <strong>[submit, save, delete, restart, or change permissions]</strong>. Exclude <strong>[sensitive details]</strong> from the captures.</p>
+</blockquote>
+<p>The template works equally well for public websites, local applications, and authenticated enterprise tools.</p>
+<h2>Safety and publishing checks</h2>
+<p>Before sharing a screenshot, review it for information that the tutorial does not need. Recapture or redact unnecessary customer data, account details, internal hostnames, IP addresses, resource identifiers, and personal information.</p>
+<p>Also distinguish read-only interactions from mutations. Scrolling, opening tabs, and changing display filters are usually safe for documentation. Clicking <strong>Save</strong>, <strong>Delete</strong>, <strong>Publish</strong>, <strong>Restart</strong>, or <strong>Grant access</strong> changes external state and should be explicitly authorized.</p>
+<h2>The takeaway</h2>
+<p>The Codex Chrome skill is a general-purpose UI capture capability, not an Azure-specific tool. Its advantage is the combination of browser navigation, UI interaction, state verification, and screenshot capture inside the Chrome session you already use.</p>
+<p>The Publishing Studio example demonstrates the complete loop: give Codex a scoped request, open and verify the application, capture the initial viewport, prepare a second UI state, and capture the controls that matter. Replace the sample URL and steps with your own application, and the same process becomes a repeatable way to build accurate visual documentation.</p>
+</div>
+</article></main></body></html>
